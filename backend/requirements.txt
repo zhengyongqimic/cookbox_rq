@@ -1,0 +1,11 @@
+Flask==3.0.0
+Flask-SocketIO==5.3.6
+flask-cors==4.0.0
+eventlet==0.33.3
+opencv-python==4.8.1.78
+mediapipe==0.10.9
+numpy==1.26.2
+requests==2.31.0
+python-dotenv==1.0.0
+# volcengine-python-sdk-ark-runtime  <-- Commented out due to install error, using mock
+ffmpeg-python
