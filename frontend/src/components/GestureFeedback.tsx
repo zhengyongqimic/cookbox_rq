@@ -20,10 +20,11 @@ const GestureFeedback: React.FC<GestureFeedbackProps> = ({ gesture, onClear }) =
     switch (gesture) {
       case 'next': return <ArrowRight size={48} />;
       case 'prev': return <ArrowLeft size={48} />;
-      case 'toggle_pause': return <Hand size={48} />; // Placeholder for Pause/Play toggle
+      case 'toggle_pause': return <PlayCircle size={48} />; 
       case 'overview': return <LayoutGrid size={48} />;
       case 'resume_overview': return <PlayCircle size={48} />;
-      case 'open_palm': return <PlayCircle size={48} />; // Changed icon to PlayCircle for clarity
+      case 'resume': return <PlayCircle size={48} />;
+      case 'open_palm': return <PlayCircle size={48} />; // Fallback
       default: return null;
     }
   };
@@ -35,7 +36,8 @@ const GestureFeedback: React.FC<GestureFeedbackProps> = ({ gesture, onClear }) =
       case 'toggle_pause': return 'Pause/Resume';
       case 'overview': return 'Overview';
       case 'resume_overview': return 'Back to Step';
-      case 'open_palm': return 'Back to Step'; // Changed text
+      case 'resume': return 'Back to Step';
+      case 'open_palm': return 'Action triggered'; // Fallback
       default: return '';
     }
   };

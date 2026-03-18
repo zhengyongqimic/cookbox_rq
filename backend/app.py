@@ -1,18 +1,15 @@
-import sys
-# Workaround for MediaPipe Chinese path issue: use C:\Trae_Temp for mediapipe package
-sys.path.insert(0, r'C:\Trae_Temp')
-
 import eventlet
 import eventlet.tpool # Explicitly import tpool
 # Monkey patch socket to make yt-dlp non-blocking (cooperative)
-# Note: Some older versions of eventlet might not support dns=False, if so, we just patch all
-# or patch specific modules. Let's try patching socket only explicitly if dns kwarg fails,
-# but usually patching everything is default.
 try:
     eventlet.monkey_patch(dns=False)
 except TypeError:
     # Fallback for older eventlet versions
     eventlet.monkey_patch(socket=True, select=True)
+
+import sys
+# Workaround for MediaPipe Chinese path issue: use C:\Trae_Temp for mediapipe package
+sys.path.insert(0, r'C:\Trae_Temp')
 
 import os
 import time
@@ -34,9 +31,13 @@ from volcenginesdkarkruntime import Ark
 import subprocess
 import yt_dlp
 import ffmpeg
+import mimetypes
 from flask_migrate import Migrate
 from flask_jwt_extended import JWTManager, create_access_token, jwt_required, get_jwt_identity
 from models import db, User, VideoResource, RecipeStep, UserRecipe
+
+# Register MIME types for MP4
+mimetypes.add_type('video/mp4', '.mp4')
 
 # Configure logging
 logging.basicConfig(level=logging.INFO, format='%(asctime)s - %(name)s - %(levelname)s - %(message)s')
@@ -121,30 +122,28 @@ def add_log(message, level='info'):
     else:
         logger.info(message)
 
-def convert_to_hls(input_path, output_dir):
-    """Convert video to HLS format using ffmpeg"""
+def standardize_video(input_path, output_path):
+    """
+    Convert video to standardized MP4 with fixed GOP for fast seeking (Soft Slicing).
+    GOP=30 (approx 1s at 30fps) for precise seeking.
+    """
     try:
-        os.makedirs(output_dir, exist_ok=True)
-        output_playlist = os.path.join(output_dir, 'playlist.m3u8')
-        
         cmd = [
             'ffmpeg', '-y', '-loglevel', 'error',
             '-i', input_path,
-            '-c:v', 'libx264', '-preset', 'veryfast', '-crf', '23',
+            '-c:v', 'libx264', '-preset', 'veryfast', 
+            '-g', '30', '-sc_threshold', '0', # Force keyframes every ~1s
             '-c:a', 'aac', '-b:a', '128k',
-            '-f', 'hls',
-            '-hls_time', '10',
-            '-hls_list_size', '0',
-            output_playlist
+            output_path
         ]
         
         eventlet.tpool.execute(
             lambda: subprocess.run(cmd, check=True, stdout=subprocess.DEVNULL, stderr=subprocess.PIPE)
         )
-        return output_playlist
+        return True
     except Exception as e:
-        logger.error(f"Error converting to HLS: {e}")
-        return None
+        logger.error(f"Error standardizing video: {e}")
+        return False
 
 def update_db_status(file_id, status):
     with app.app_context():
@@ -214,6 +213,7 @@ def download_video(url, output_folder, file_id=None):
             'outtmpl': os.path.join(output_folder, '%(id)s.%(ext)s'),
             'quiet': True,
             'no_warnings': True,
+            'noplaylist': True,
             'progress_hooks': [progress_hook], # Add progress hook
             # Add headers for Bilibili
             'http_headers': {
@@ -299,8 +299,7 @@ def get_status(file_id):
             "status": video.status,
             "steps": [step.to_dict() for step in video.steps],
             "original_url": video.original_url,
-            "file_id": video.id,
-            "filename": video.filename # Expose filename for MP4 fallback
+            "file_id": video.id
         })
 
     return jsonify({"error": "File ID not found"}), 404
@@ -397,6 +396,17 @@ def process_video_url(video_url, file_id):
         # 2. Analyze with AI
         client = get_ark_client()
         steps = []
+        
+        # Determine the correct video URL to use for steps (MP4 Soft Slicing)
+        processed_filename = f"{file_id}_processed.mp4"
+        processed_path = os.path.join(app.config['UPLOAD_FOLDER'], processed_filename)
+        
+        # We need to standardize it anyway for smooth playback
+        add_log("Standardizing video for playback...")
+        if standardize_video(video_path, processed_path):
+             full_video_url = f"/videos/{processed_filename}"
+        else:
+             full_video_url = f"/videos/{os.path.basename(video_path)}"
         
         if client:
             try:
@@ -525,28 +535,16 @@ def process_video_url(video_url, file_id):
                 {"id": 3, "start": 30, "end": 45, "title": "Finishing Touches", "description": "Seasoning and plating.", "highlight": "Serve"}
             ]
             
-        processing_status[file_id]["progress"] = 50
-        socketio.emit('processing_update', {"file_id": file_id, "status": "slicing", "progress": 50, "message": "Transcoding to HLS..."})
+        processing_status[file_id]["progress"] = 90
+        socketio.emit('processing_update', {"file_id": file_id, "status": "slicing", "progress": 90, "message": "Finalizing..."})
         
-        # 3. HLS Transcoding (replacing soft slicing with HLS)
-        hls_dir = os.path.join(app.config['SLICES_FOLDER'], file_id, 'hls')
-        hls_playlist = convert_to_hls(video_path, hls_dir)
-        
-        hls_url = None
-        if hls_playlist:
-            hls_url = f"/slices/{file_id}/hls/playlist.m3u8"
-            add_log(f"HLS transcoding completed: {hls_url}")
-        else:
-            add_log("HLS transcoding failed, falling back to MP4", "warning")
-
-        # Update steps with HLS URL or MP4 URL
-        full_video_url = hls_url if hls_url else f"/videos/{os.path.basename(video_path)}"
+        # Update steps with Full Video URL
         add_log(f"Processing completed. Using video URL: {full_video_url}")
         
         for step in steps:
             step['video_url'] = full_video_url
             step['is_full_video'] = True
-            step['is_hls'] = bool(hls_url)
+            step['is_hls'] = False
 
         # Save steps to DB
         save_steps_to_db(file_id, steps)
@@ -632,48 +630,23 @@ def process_video(file_path, file_id):
             ]
             
         processing_status[file_id]["progress"] = 50
-        socketio.emit('processing_update', {"file_id": file_id, "status": "slicing", "progress": 50})
+        socketio.emit('processing_update', {"file_id": file_id, "status": "slicing", "progress": 50, "message": "Standardizing video..."})
         
-        # 2. Slice video using ffmpeg
-        slices_dir = os.path.join(app.config['SLICES_FOLDER'], file_id)
-        os.makedirs(slices_dir, exist_ok=True)
+        # 2. Standardize Video (Soft Slicing preparation)
+        processed_filename = f"{file_id}_processed.mp4"
+        processed_path = os.path.join(app.config['UPLOAD_FOLDER'], processed_filename)
+        
+        # In process_video (upload), file_path is the uploaded file
+        if standardize_video(file_path, processed_path):
+             full_video_url = f"/videos/{processed_filename}"
+        else:
+             full_video_url = f"/videos/{os.path.basename(file_path)}"
         
         for step in steps:
-            start_time = step['start']
-            duration = step['end'] - step['start']
-            output_filename = f"step_{step['id']}.mp4"
-            output_path = os.path.join(slices_dir, output_filename)
+            step['video_url'] = full_video_url
+            step['is_full_video'] = True
+            step['is_hls'] = False
             
-            # Use ffmpeg to slice
-            # ffmpeg -i input.mp4 -ss start -t duration -c copy output.mp4
-            # Re-encoding to ensure compatibility and consistent formatting
-            cmd = [
-                'ffmpeg', '-y', '-loglevel', 'error',
-                '-ss', str(start_time),
-                '-t', str(duration),
-                '-i', file_path,
-                '-c:v', 'libx264', '-preset', 'ultrafast', '-crf', '23',
-                '-c:a', 'aac', '-b:a', '128k',
-                '-vf', 'scale=-2:720', # Resize to 720p height, keep aspect ratio
-                output_path
-            ]
-            
-            # Check if ffmpeg is installed
-            try:
-                # Wrap subprocess.run in tpool to prevent blocking
-                eventlet.tpool.execute(
-                    lambda: subprocess.run(cmd, check=True, stdout=subprocess.DEVNULL, stderr=subprocess.PIPE)
-                )
-                step['video_url'] = f"/slices/{file_id}/{output_filename}"
-            except subprocess.CalledProcessError as e:
-                logger.error(f"Error slicing video for step {step['id']}: {e}")
-                step['video_url'] = None # Handle error gracefully
-            except FileNotFoundError:
-                 logger.error("ffmpeg not found. Please install ffmpeg.")
-                 # For prototype without ffmpeg, return original video with timestamps?
-                 # Or just fail gracefully
-                 step['video_url'] = None
-
         processing_status[file_id] = {"status": "completed", "steps": steps}
         socketio.emit('processing_update', {"file_id": file_id, "status": "completed", "steps": steps})
         logger.info(f"Processing completed for video {file_id}")
@@ -694,13 +667,7 @@ def serve_slice(file_id, filename):
 
 @app.route('/slices/<file_id>/hls/<filename>')
 def serve_hls(file_id, filename):
-    response = send_from_directory(os.path.join(app.config['SLICES_FOLDER'], file_id, 'hls'), filename)
-    # Explicitly set MIME types to ensure browser compatibility
-    if filename.endswith('.m3u8'):
-        response.headers['Content-Type'] = 'application/vnd.apple.mpegurl'
-    elif filename.endswith('.ts'):
-        response.headers['Content-Type'] = 'video/MP2T'
-    return response
+    return send_from_directory(os.path.join(app.config['SLICES_FOLDER'], file_id, 'hls'), filename)
 
 
 # Gesture Recognition Socket Namespace

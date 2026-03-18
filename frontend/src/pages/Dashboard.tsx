@@ -25,7 +25,7 @@ const Dashboard = () => {
   const [lastGesture, setLastGesture] = useState<GestureType>(null);
   const [gestureLogs, setGestureLogs] = useState<{time: string, gesture: string}[]>([]);
   const [originalSource, setOriginalSource] = useState<string | null>(null);
-  const [videoFilename, setVideoFilename] = useState<string | null>(null);
+  const [togglePlayTrigger, setTogglePlayTrigger] = useState<number>(0);
 
   // Upload/Processing State
   const [file, setFile] = useState<File | null>(null);
@@ -141,7 +141,6 @@ const Dashboard = () => {
         if (status && status.steps) {
             setSteps(status.steps);
             setOriginalSource(status.original_url || null); // Assuming backend returns original_url in status
-            setVideoFilename(status.filename || null); // Get filename for fallback
             setCurrentStepIndex(0);
             setView('player');
         } else {
@@ -176,20 +175,58 @@ const Dashboard = () => {
         }
         break;
       case 'toggle_pause':
-        setLastGesture(gesture);
+        // Keep toggle_pause logic if backend still sends it
+        if (view === 'player') {
+          setTogglePlayTrigger(Date.now());
+          setLastGesture('toggle_pause'); // Explicitly set as toggle_pause
+        }
         break;
       case 'open_palm':
         if (view === 'overview') {
             setView('player');
-            setLastGesture(gesture);
-        } else {
-            setLastGesture('toggle_pause');
+            setLastGesture('resume'); // Tell feedback we are resuming
+        } else if (view === 'player') {
+            setTogglePlayTrigger(Date.now());
+            setLastGesture('toggle_pause'); // Tell feedback we are pausing/playing
         }
         break;
     }
   };
 
-  // Main Content
+  // Views
+  if (view === 'overview') {
+     return (
+       <div className="min-h-screen bg-zinc-950 text-white p-8 flex flex-col items-center">
+         <h1 className="text-4xl font-bold mb-8 flex items-center gap-4 text-orange-500">
+           <ChefHat size={40} />
+           Kitchen Assistant - Overview
+         </h1>
+         
+         {/* Hidden VideoPlayer to keep receiving frames/gestures in Overview mode */}
+         <div className="hidden">
+            <VideoPlayer 
+              currentStep={steps[currentStepIndex]} 
+              onGesture={handleGesture} 
+              originalSource={originalSource}
+              togglePlayTrigger={togglePlayTrigger}
+            />
+         </div>
+
+         <StepList steps={steps} currentStepIndex={currentStepIndex} onStepClick={(idx) => {
+             setCurrentStepIndex(idx);
+             setView('player');
+         }} />
+         <button 
+           onClick={() => setView('player')}
+           className="mt-8 px-8 py-3 bg-orange-500 text-white rounded-full font-bold hover:bg-orange-600 transition-colors"
+         >
+           Resume Cooking
+         </button>
+         <GestureFeedback gesture={lastGesture} onClear={() => setLastGesture(null)} />
+       </div>
+     )
+  }
+
   return (
     <div className="min-h-screen bg-zinc-950 text-white flex flex-col items-center p-4 md:p-8 font-sans">
       <header className="w-full max-w-6xl flex justify-between items-center mb-8">
@@ -220,31 +257,6 @@ const Dashboard = () => {
       {/* Main Content */}
       <main className="w-full max-w-6xl flex flex-col gap-8 relative">
         
-        {/* View: Overview */}
-        {view === 'overview' && (
-           <div className="min-h-screen bg-zinc-950 text-white p-8 flex flex-col items-center fixed inset-0 z-50">
-             <h1 className="text-4xl font-bold mb-8 flex items-center gap-4 text-orange-500">
-               <ChefHat size={40} />
-               Kitchen Assistant - Overview
-             </h1>
-             
-             {/* Hidden VideoPlayer to keep receiving frames/gestures in Overview mode */}
-             {/* We keep the VideoPlayer MOUNTED in the main flow, just hidden via CSS when in overview */}
-             
-             <StepList steps={steps} currentStepIndex={currentStepIndex} onStepClick={(idx) => {
-                 setCurrentStepIndex(idx);
-                 setView('player');
-             }} />
-             <button 
-               onClick={() => setView('player')}
-               className="mt-8 px-8 py-3 bg-orange-500 text-white rounded-full font-bold hover:bg-orange-600 transition-colors"
-             >
-               Resume Cooking
-             </button>
-             <GestureFeedback gesture={lastGesture} onClear={() => setLastGesture(null)} />
-           </div>
-        )}
-
         {view === 'grid' ? (
             <>
                 <div className="flex justify-between items-center">
@@ -276,23 +288,19 @@ const Dashboard = () => {
                 )}
             </>
         ) : (
-            // Player View (and effectively Overview logic container)
-            <div className={`w-full flex flex-col items-center gap-8 ${view === 'overview' ? 'hidden' : ''}`}>
+            // Player View
+            <div className="w-full flex flex-col items-center gap-8">
                  {steps.length > 0 && (
                     <div className="text-sm text-zinc-400 self-start">
                         Step {currentStepIndex + 1} of {steps.length}
                     </div>
                 )}
                 
-                {/* VideoPlayer is ALWAYS mounted when view is player OR overview */}
-                {/* But if we go back to grid, we might unmount it. Ideally we keep it if we want persistent connection? */}
-                {/* For now, let's keep it simple: Player <-> Overview toggles visibility, Grid unmounts. */}
-                
                 <VideoPlayer 
                     currentStep={steps[currentStepIndex]} 
                     onGesture={handleGesture} 
                     originalSource={originalSource}
-                    filename={videoFilename}
+                    togglePlayTrigger={togglePlayTrigger}
                 />
                 
                 <StepList 
@@ -316,9 +324,9 @@ const Dashboard = () => {
                         <div className="text-xs text-zinc-500 text-center">Point Left</div>
                     </div>
                     <div className="flex flex-col items-center gap-2 p-3 bg-black/40 rounded-lg">
-                        <div className="text-2xl">🙅‍♂️</div>
+                        <div className="text-2xl">✋ / 🙅‍♂️</div>
                         <div className="font-bold text-orange-500">Pause / Play</div>
-                        <div className="text-xs text-zinc-500 text-center">Cross Arms</div>
+                        <div className="text-xs text-zinc-500 text-center">Open Palm / Cross Arms</div>
                     </div>
                     <div className="flex flex-col items-center gap-2 p-3 bg-black/40 rounded-lg">
                         <div className="text-2xl">🙌 / ✋</div>
