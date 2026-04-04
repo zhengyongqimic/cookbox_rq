@@ -34,6 +34,7 @@ import ffmpeg
 import mimetypes
 from flask_migrate import Migrate
 from flask_jwt_extended import JWTManager, create_access_token, jwt_required, get_jwt_identity
+from sqlalchemy import text
 from models import db, User, VideoResource, RecipeStep, UserRecipe
 
 # Register MIME types for MP4
@@ -44,17 +45,26 @@ logging.basicConfig(level=logging.INFO, format='%(asctime)s - %(name)s - %(level
 logger = logging.getLogger(__name__)
 
 # Initialize Flask app
-app = Flask(__name__)
+BASE_DIR = os.path.abspath(os.path.dirname(__file__))
+PROJECT_ROOT = os.path.abspath(os.path.join(BASE_DIR, '..'))
+INSTANCE_DIR = os.path.join(BASE_DIR, 'instance')
+DB_PATH = os.path.join(INSTANCE_DIR, 'hyperkitchen.db')
+
+app = Flask(__name__, instance_path=INSTANCE_DIR)
 app.config['SECRET_KEY'] = 'hyperkitchen-secret-key'
 app.config['JWT_SECRET_KEY'] = 'hyperkitchen-jwt-secret-key'
-app.config['SQLALCHEMY_DATABASE_URI'] = 'sqlite:///hyperkitchen.db'
+app.config['SQLALCHEMY_DATABASE_URI'] = f"sqlite:///{DB_PATH.replace(os.sep, '/')}"
 app.config['SQLALCHEMY_TRACK_MODIFICATIONS'] = False
-app.config['UPLOAD_FOLDER'] = os.path.join(os.getcwd(), 'uploads')
-app.config['SLICES_FOLDER'] = os.path.join(os.getcwd(), 'slices')
+app.config['UPLOAD_FOLDER'] = os.path.join(BASE_DIR, 'uploads')
+app.config['THUMBNAIL_FOLDER'] = os.path.join(BASE_DIR, 'thumbnails')
+app.config['SLICES_FOLDER'] = os.path.join(BASE_DIR, 'slices')
 app.config['MAX_CONTENT_LENGTH'] = 500 * 1024 * 1024  # 500MB max upload
+app.config['FRONTEND_DIST_FOLDER'] = os.path.join(PROJECT_ROOT, 'frontend', 'dist')
 
 # Ensure directories exist
+os.makedirs(INSTANCE_DIR, exist_ok=True)
 os.makedirs(app.config['UPLOAD_FOLDER'], exist_ok=True)
+os.makedirs(app.config['THUMBNAIL_FOLDER'], exist_ok=True)
 os.makedirs(app.config['SLICES_FOLDER'], exist_ok=True)
 
 # Enable CORS
@@ -122,6 +132,135 @@ def add_log(message, level='info'):
     else:
         logger.info(message)
 
+def ensure_runtime_schema():
+    """Add lightweight columns needed by the prototype without requiring a migration step."""
+    expected_columns = {
+        'processed_file_path': 'TEXT',
+        'thumbnail_path': 'TEXT',
+        'thumbnail_url': 'TEXT',
+        'duration_seconds': 'REAL',
+        'has_audio': 'BOOLEAN DEFAULT 0',
+        'processing_version': 'INTEGER DEFAULT 1'
+    }
+    with db.engine.begin() as connection:
+        result = connection.execute(text("PRAGMA table_info(video_resources)"))
+        existing_columns = {row[1] for row in result.fetchall()}
+        for column_name, column_type in expected_columns.items():
+            if column_name not in existing_columns:
+                connection.execute(text(f"ALTER TABLE video_resources ADD COLUMN {column_name} {column_type}"))
+
+def probe_video_metadata(input_path):
+    """Return duration and audio presence for a video file."""
+    try:
+        cmd = [
+            'ffprobe', '-v', 'error',
+            '-show_streams', '-show_format',
+            '-of', 'json', input_path
+        ]
+        result = eventlet.tpool.execute(
+            lambda: subprocess.run(cmd, check=True, capture_output=True, text=True)
+        )
+        payload = json.loads(result.stdout or '{}')
+        streams = payload.get('streams', [])
+        format_info = payload.get('format', {})
+        duration = None
+        if format_info.get('duration'):
+            duration = float(format_info['duration'])
+        elif streams:
+            durations = [float(stream['duration']) for stream in streams if stream.get('duration')]
+            if durations:
+                duration = max(durations)
+        has_audio = any(stream.get('codec_type') == 'audio' for stream in streams)
+        return {
+            'duration_seconds': duration,
+            'has_audio': has_audio
+        }
+    except Exception as e:
+        logger.warning(f"Failed to probe video metadata for {input_path}: {e}")
+        return {
+            'duration_seconds': None,
+            'has_audio': False
+        }
+
+def generate_thumbnail(input_path, output_path):
+    """Generate a JPEG thumbnail from the first meaningful frame."""
+    try:
+        cmd = [
+            'ffmpeg', '-y', '-loglevel', 'error',
+            '-ss', '1',
+            '-i', input_path,
+            '-frames:v', '1',
+            '-q:v', '2',
+            output_path
+        ]
+        eventlet.tpool.execute(
+            lambda: subprocess.run(cmd, check=True, stdout=subprocess.DEVNULL, stderr=subprocess.PIPE)
+        )
+        if os.path.exists(output_path):
+            return True
+    except Exception:
+        pass
+
+    try:
+        fallback_cmd = [
+            'ffmpeg', '-y', '-loglevel', 'error',
+            '-ss', '0',
+            '-i', input_path,
+            '-frames:v', '1',
+            '-q:v', '2',
+            output_path
+        ]
+        eventlet.tpool.execute(
+            lambda: subprocess.run(fallback_cmd, check=True, stdout=subprocess.DEVNULL, stderr=subprocess.PIPE)
+        )
+        return os.path.exists(output_path)
+    except Exception as e:
+        logger.warning(f"Failed to generate thumbnail for {input_path}: {e}")
+        return False
+
+def backfill_existing_video_assets():
+    with app.app_context():
+        videos = VideoResource.query.filter(VideoResource.status == 'completed').all()
+        for video in videos:
+            source_path = video.processed_file_path
+            inferred_processed_path = os.path.join(app.config['UPLOAD_FOLDER'], f"{video.id}_processed.mp4")
+            if not source_path:
+                if os.path.exists(inferred_processed_path):
+                    source_path = inferred_processed_path
+                elif video.file_path and os.path.exists(video.file_path):
+                    source_path = video.file_path
+                elif video.filename:
+                    candidate = os.path.join(app.config['UPLOAD_FOLDER'], video.filename)
+                    if os.path.exists(candidate):
+                        source_path = candidate
+            if not source_path or not os.path.exists(source_path):
+                continue
+
+            updates = {}
+            if os.path.basename(source_path).endswith('_processed.mp4'):
+                updates['processed_file_path'] = source_path
+            elif os.path.exists(inferred_processed_path):
+                updates['processed_file_path'] = inferred_processed_path
+
+            if not video.duration_seconds or video.has_audio is None or video.has_audio is False:
+                metadata = probe_video_metadata(source_path)
+                if not video.duration_seconds:
+                    updates['duration_seconds'] = metadata['duration_seconds']
+                if video.has_audio is None or video.has_audio is False:
+                    updates['has_audio'] = metadata['has_audio']
+
+            thumbnail_filename = f"{video.id}.jpg"
+            thumbnail_path = os.path.join(app.config['THUMBNAIL_FOLDER'], thumbnail_filename)
+            if not video.thumbnail_url:
+                if os.path.exists(thumbnail_path) or generate_thumbnail(source_path, thumbnail_path):
+                    updates['thumbnail_path'] = thumbnail_path
+                    updates['thumbnail_url'] = f"/thumbnails/{thumbnail_filename}"
+
+            if updates:
+                for key, value in updates.items():
+                    setattr(video, key, value)
+        db.session.commit()
+
 def standardize_video(input_path, output_path):
     """
     Convert video to standardized MP4 with fixed GOP for fast seeking (Soft Slicing).
@@ -151,6 +290,16 @@ def update_db_status(file_id, status):
         if video:
             video.status = status
             db.session.commit()
+
+def update_video_assets(file_id, **kwargs):
+    with app.app_context():
+        video = VideoResource.query.get(file_id)
+        if not video:
+            return
+        for key, value in kwargs.items():
+            if hasattr(video, key):
+                setattr(video, key, value)
+        db.session.commit()
 
 def save_steps_to_db(file_id, steps):
     with app.app_context():
@@ -299,7 +448,11 @@ def get_status(file_id):
             "status": video.status,
             "steps": [step.to_dict() for step in video.steps],
             "original_url": video.original_url,
-            "file_id": video.id
+            "file_id": video.id,
+            "video_url": f"/videos/{os.path.basename(video.processed_file_path)}" if video.processed_file_path else (f"/videos/{video.filename}" if video.filename else None),
+            "thumbnail_url": video.thumbnail_url,
+            "duration_seconds": video.duration_seconds,
+            "has_audio": video.has_audio
         })
 
     return jsonify({"error": "File ID not found"}), 404
@@ -321,7 +474,10 @@ def analyze_link():
             "message": "Video already processed",
             "file_id": existing_video.id,
             "status": existing_video.status,
-            "steps": [step.to_dict() for step in existing_video.steps]
+            "steps": [step.to_dict() for step in existing_video.steps],
+            "thumbnail_url": existing_video.thumbnail_url,
+            "has_audio": existing_video.has_audio,
+            "duration_seconds": existing_video.duration_seconds
         })
 
     # Check if currently processing
@@ -330,7 +486,8 @@ def analyze_link():
          return jsonify({
             "message": "Video is already being processed",
             "file_id": pending_video.id,
-            "status": pending_video.status
+            "status": pending_video.status,
+            "thumbnail_url": pending_video.thumbnail_url
         })
 
     file_id = str(uuid.uuid4())
@@ -400,13 +557,32 @@ def process_video_url(video_url, file_id):
         # Determine the correct video URL to use for steps (MP4 Soft Slicing)
         processed_filename = f"{file_id}_processed.mp4"
         processed_path = os.path.join(app.config['UPLOAD_FOLDER'], processed_filename)
+        thumbnail_filename = f"{file_id}.jpg"
+        thumbnail_path = os.path.join(app.config['THUMBNAIL_FOLDER'], thumbnail_filename)
+        thumbnail_url = None
         
         # We need to standardize it anyway for smooth playback
         add_log("Standardizing video for playback...")
         if standardize_video(video_path, processed_path):
              full_video_url = f"/videos/{processed_filename}"
+             media_probe_path = processed_path
         else:
              full_video_url = f"/videos/{os.path.basename(video_path)}"
+             media_probe_path = video_path
+
+        metadata = probe_video_metadata(media_probe_path)
+        if generate_thumbnail(media_probe_path, thumbnail_path):
+            thumbnail_url = f"/thumbnails/{thumbnail_filename}"
+        update_video_assets(
+            file_id,
+            file_path=video_path,
+            processed_file_path=processed_path if os.path.exists(processed_path) else None,
+            thumbnail_path=thumbnail_path if thumbnail_url else None,
+            thumbnail_url=thumbnail_url,
+            duration_seconds=metadata['duration_seconds'],
+            has_audio=metadata['has_audio'],
+            processing_version=2
+        )
         
         if client:
             try:
@@ -550,8 +726,27 @@ def process_video_url(video_url, file_id):
         save_steps_to_db(file_id, steps)
         update_db_status(file_id, "completed")
 
-        processing_status[file_id] = {"status": "completed", "steps": steps, "original_url": video_url}
-        socketio.emit('processing_update', {"file_id": file_id, "status": "completed", "steps": steps, "progress": 100, "original_url": video_url})
+        processing_status[file_id] = {
+            "status": "completed",
+            "steps": steps,
+            "original_url": video_url,
+            "file_id": file_id,
+            "video_url": full_video_url,
+            "thumbnail_url": thumbnail_url,
+            "duration_seconds": metadata['duration_seconds'],
+            "has_audio": metadata['has_audio']
+        }
+        socketio.emit('processing_update', {
+            "file_id": file_id,
+            "status": "completed",
+            "steps": steps,
+            "progress": 100,
+            "original_url": video_url,
+            "video_url": full_video_url,
+            "thumbnail_url": thumbnail_url,
+            "duration_seconds": metadata['duration_seconds'],
+            "has_audio": metadata['has_audio']
+        })
         
     except Exception as e:
         add_log(f"Error processing video URL: {e}", "error")
@@ -559,6 +754,7 @@ def process_video_url(video_url, file_id):
         socketio.emit('processing_update', {"file_id": file_id, "status": "error", "message": str(e)})
 
 @app.route('/api/upload', methods=['POST'])
+@jwt_required(optional=True)
 def upload_video():
     if 'video' not in request.files:
         return jsonify({"error": "No video file provided"}), 400
@@ -568,12 +764,24 @@ def upload_video():
         return jsonify({"error": "No selected file"}), 400
     
     if file:
+        user_id = get_jwt_identity()
         filename = secure_filename(file.filename)
         file_id = str(uuid.uuid4())
         extension = os.path.splitext(filename)[1]
         saved_filename = f"{file_id}{extension}"
         file_path = os.path.join(app.config['UPLOAD_FOLDER'], saved_filename)
         file.save(file_path)
+
+        new_video = VideoResource(
+            id=file_id,
+            user_id=user_id,
+            filename=saved_filename,
+            original_filename=filename,
+            file_path=file_path,
+            status='pending'
+        )
+        db.session.add(new_video)
+        db.session.commit()
         
         # Start processing in background
         # socketio.start_background_task(process_video, file_path, file_id)
@@ -598,6 +806,7 @@ def process_video(file_path, file_id):
     3. Slice video based on timestamps
     """
     logger.info(f"Starting processing for video {file_id}")
+    update_db_status(file_id, "analyzing")
     
     # Wait a bit to ensure client has received the upload response and subscribed to socket events
     time.sleep(1)
@@ -635,24 +844,63 @@ def process_video(file_path, file_id):
         # 2. Standardize Video (Soft Slicing preparation)
         processed_filename = f"{file_id}_processed.mp4"
         processed_path = os.path.join(app.config['UPLOAD_FOLDER'], processed_filename)
+        thumbnail_filename = f"{file_id}.jpg"
+        thumbnail_path = os.path.join(app.config['THUMBNAIL_FOLDER'], thumbnail_filename)
         
         # In process_video (upload), file_path is the uploaded file
         if standardize_video(file_path, processed_path):
              full_video_url = f"/videos/{processed_filename}"
+             media_probe_path = processed_path
         else:
              full_video_url = f"/videos/{os.path.basename(file_path)}"
+             media_probe_path = file_path
+
+        metadata = probe_video_metadata(media_probe_path)
+        thumbnail_url = None
+        if generate_thumbnail(media_probe_path, thumbnail_path):
+            thumbnail_url = f"/thumbnails/{thumbnail_filename}"
+
+        update_video_assets(
+            file_id,
+            file_path=file_path,
+            processed_file_path=processed_path if os.path.exists(processed_path) else None,
+            thumbnail_path=thumbnail_path if thumbnail_url else None,
+            thumbnail_url=thumbnail_url,
+            duration_seconds=metadata['duration_seconds'],
+            has_audio=metadata['has_audio'],
+            processing_version=2
+        )
         
         for step in steps:
             step['video_url'] = full_video_url
             step['is_full_video'] = True
             step['is_hls'] = False
             
-        processing_status[file_id] = {"status": "completed", "steps": steps}
-        socketio.emit('processing_update', {"file_id": file_id, "status": "completed", "steps": steps})
+        save_steps_to_db(file_id, steps)
+        update_db_status(file_id, "completed")
+        processing_status[file_id] = {
+            "status": "completed",
+            "steps": steps,
+            "file_id": file_id,
+            "video_url": full_video_url,
+            "thumbnail_url": thumbnail_url,
+            "duration_seconds": metadata['duration_seconds'],
+            "has_audio": metadata['has_audio']
+        }
+        socketio.emit('processing_update', {
+            "file_id": file_id,
+            "status": "completed",
+            "steps": steps,
+            "video_url": full_video_url,
+            "thumbnail_url": thumbnail_url,
+            "duration_seconds": metadata['duration_seconds'],
+            "has_audio": metadata['has_audio']
+        })
         logger.info(f"Processing completed for video {file_id}")
 
     except Exception as e:
         logger.error(f"Error processing video: {e}")
+        update_db_status(file_id, "error")
         processing_status[file_id] = {"status": "error", "message": str(e)}
         socketio.emit('processing_update', {"file_id": file_id, "status": "error", "message": str(e)})
 
@@ -661,6 +909,10 @@ def serve_video(filename):
     """Serve the original full video file"""
     return send_from_directory(app.config['UPLOAD_FOLDER'], filename)
 
+@app.route('/thumbnails/<filename>')
+def serve_thumbnail(filename):
+    return send_from_directory(app.config['THUMBNAIL_FOLDER'], filename)
+
 @app.route('/slices/<file_id>/<filename>')
 def serve_slice(file_id, filename):
     return send_from_directory(os.path.join(app.config['SLICES_FOLDER'], file_id), filename)
@@ -668,6 +920,23 @@ def serve_slice(file_id, filename):
 @app.route('/slices/<file_id>/hls/<filename>')
 def serve_hls(file_id, filename):
     return send_from_directory(os.path.join(app.config['SLICES_FOLDER'], file_id, 'hls'), filename)
+
+@app.route('/', defaults={'path': ''})
+@app.route('/<path:path>')
+def serve_frontend(path):
+    """
+    Serve the built frontend so the project can be previewed without Vite.
+    API, video, and socket routes declared above still take precedence.
+    """
+    dist_dir = app.config['FRONTEND_DIST_FOLDER']
+    if not os.path.isdir(dist_dir):
+        return jsonify({"error": "Frontend build not found", "path": dist_dir}), 404
+
+    requested_path = os.path.join(dist_dir, path)
+    if path and os.path.exists(requested_path) and os.path.isfile(requested_path):
+        return send_from_directory(dist_dir, path)
+
+    return send_from_directory(dist_dir, 'index.html')
 
 
 # Gesture Recognition Socket Namespace
@@ -804,7 +1073,7 @@ def detect_gesture(frame):
 def handle_recipes():
     user_id = get_jwt_identity()
     if request.method == 'GET':
-        recipes = UserRecipe.query.filter_by(user_id=user_id).all()
+        recipes = UserRecipe.query.filter_by(user_id=user_id).order_by(UserRecipe.created_at.desc()).all()
         return jsonify([recipe.to_dict() for recipe in recipes])
     
     if request.method == 'POST':
@@ -843,8 +1112,10 @@ def handle_recipe_detail(recipe_id):
         db.session.commit()
         return jsonify({"message": "Recipe deleted"})
 
+with app.app_context():
+    db.create_all()
+    ensure_runtime_schema()
+    backfill_existing_video_assets()
+
 if __name__ == '__main__':
-    # Create DB tables if not exist
-    with app.app_context():
-        db.create_all()
     socketio.run(app, host='0.0.0.0', port=5000, debug=True, allow_unsafe_werkzeug=True)

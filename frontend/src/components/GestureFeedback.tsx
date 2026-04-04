@@ -1,7 +1,7 @@
 import React, { useEffect } from 'react';
 import { motion, AnimatePresence } from 'framer-motion';
 import type { GestureType } from '../types';
-import { Hand, ArrowRight, ArrowLeft, LayoutGrid, PlayCircle } from 'lucide-react';
+import { ArrowRight, ArrowLeft, LayoutGrid, PlayCircle } from 'lucide-react';
 
 interface GestureFeedbackProps {
   gesture: GestureType;
@@ -23,7 +23,6 @@ const GestureFeedback: React.FC<GestureFeedbackProps> = ({ gesture, onClear }) =
       case 'toggle_pause': return <PlayCircle size={48} />; 
       case 'overview': return <LayoutGrid size={48} />;
       case 'resume_overview': return <PlayCircle size={48} />;
-      case 'resume': return <PlayCircle size={48} />;
       case 'open_palm': return <PlayCircle size={48} />; // Fallback
       default: return null;
     }
@@ -36,7 +35,6 @@ const GestureFeedback: React.FC<GestureFeedbackProps> = ({ gesture, onClear }) =
       case 'toggle_pause': return 'Pause/Resume';
       case 'overview': return 'Overview';
       case 'resume_overview': return 'Back to Step';
-      case 'resume': return 'Back to Step';
       case 'open_palm': return 'Action triggered'; // Fallback
       default: return '';
     }

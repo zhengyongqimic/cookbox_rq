@@ -1,0 +1,72 @@
+2026-04-04 17:57:57,588 - __main__ - INFO - MediaPipe Hands initialized successfully
+INFO: Created TensorFlow Lite XNNPACK delegate for CPU.
+Traceback (most recent call last):
+  File "D:\Projects\HyperKitchen\HyperKitchen_Prototype\backend\venv\Lib\site-packages\sqlalchemy\engine\base.py", line 1967, in _exec_single_context
+    self.dialect.do_execute(
+  File "D:\Projects\HyperKitchen\HyperKitchen_Prototype\backend\venv\Lib\site-packages\sqlalchemy\engine\default.py", line 952, in do_execute
+    cursor.execute(statement, parameters)
+sqlite3.OperationalError: disk I/O error
+
+The above exception was the direct cause of the following exception:
+
+Traceback (most recent call last):
+  File "D:\Projects\HyperKitchen\HyperKitchen_Prototype\backend\app.py", line 873, in <module>
+    db.create_all()
+  File "D:\Projects\HyperKitchen\HyperKitchen_Prototype\backend\venv\Lib\site-packages\flask_sqlalchemy\extension.py", line 900, in create_all
+    self._call_for_binds(bind_key, "create_all")
+  File "D:\Projects\HyperKitchen\HyperKitchen_Prototype\backend\venv\Lib\site-packages\flask_sqlalchemy\extension.py", line 881, in _call_for_binds
+    getattr(metadata, op_name)(bind=engine)
+  File "D:\Projects\HyperKitchen\HyperKitchen_Prototype\backend\venv\Lib\site-packages\sqlalchemy\sql\schema.py", line 5928, in create_all
+    bind._run_ddl_visitor(
+  File "D:\Projects\HyperKitchen\HyperKitchen_Prototype\backend\venv\Lib\site-packages\sqlalchemy\engine\base.py", line 3268, in _run_ddl_visitor
+    conn._run_ddl_visitor(visitorcallable, element, **kwargs)
+  File "D:\Projects\HyperKitchen\HyperKitchen_Prototype\backend\venv\Lib\site-packages\sqlalchemy\engine\base.py", line 2467, in _run_ddl_visitor
+    ).traverse_single(element)
+      ^^^^^^^^^^^^^^^^^^^^^^^^
+  File "D:\Projects\HyperKitchen\HyperKitchen_Prototype\backend\venv\Lib\site-packages\sqlalchemy\sql\visitors.py", line 661, in traverse_single
+    return meth(obj, **kw)
+           ^^^^^^^^^^^^^^^
+  File "D:\Projects\HyperKitchen\HyperKitchen_Prototype\backend\venv\Lib\site-packages\sqlalchemy\sql\ddl.py", line 984, in visit_metadata
+    self.traverse_single(
+  File "D:\Projects\HyperKitchen\HyperKitchen_Prototype\backend\venv\Lib\site-packages\sqlalchemy\sql\visitors.py", line 661, in traverse_single
+    return meth(obj, **kw)
+           ^^^^^^^^^^^^^^^
+  File "D:\Projects\HyperKitchen\HyperKitchen_Prototype\backend\venv\Lib\site-packages\sqlalchemy\sql\ddl.py", line 1022, in visit_table
+    )._invoke_with(self.connection)
+      ^^^^^^^^^^^^^^^^^^^^^^^^^^^^^
+  File "D:\Projects\HyperKitchen\HyperKitchen_Prototype\backend\venv\Lib\site-packages\sqlalchemy\sql\ddl.py", line 321, in _invoke_with
+    return bind.execute(self)
+           ^^^^^^^^^^^^^^^^^^
+  File "D:\Projects\HyperKitchen\HyperKitchen_Prototype\backend\venv\Lib\site-packages\sqlalchemy\engine\base.py", line 1419, in execute
+    return meth(
+           ^^^^^
+  File "D:\Projects\HyperKitchen\HyperKitchen_Prototype\backend\venv\Lib\site-packages\sqlalchemy\sql\ddl.py", line 187, in _execute_on_connection
+    return connection._execute_ddl(
+           ^^^^^^^^^^^^^^^^^^^^^^^^
+  File "D:\Projects\HyperKitchen\HyperKitchen_Prototype\backend\venv\Lib\site-packages\sqlalchemy\engine\base.py", line 1530, in _execute_ddl
+    ret = self._execute_context(
+          ^^^^^^^^^^^^^^^^^^^^^^
+  File "D:\Projects\HyperKitchen\HyperKitchen_Prototype\backend\venv\Lib\site-packages\sqlalchemy\engine\base.py", line 1846, in _execute_context
+    return self._exec_single_context(
+           ^^^^^^^^^^^^^^^^^^^^^^^^^^
+  File "D:\Projects\HyperKitchen\HyperKitchen_Prototype\backend\venv\Lib\site-packages\sqlalchemy\engine\base.py", line 1986, in _exec_single_context
+    self._handle_dbapi_exception(
+  File "D:\Projects\HyperKitchen\HyperKitchen_Prototype\backend\venv\Lib\site-packages\sqlalchemy\engine\base.py", line 2363, in _handle_dbapi_exception
+    raise sqlalchemy_exception.with_traceback(exc_info[2]) from e
+  File "D:\Projects\HyperKitchen\HyperKitchen_Prototype\backend\venv\Lib\site-packages\sqlalchemy\engine\base.py", line 1967, in _exec_single_context
+    self.dialect.do_execute(
+  File "D:\Projects\HyperKitchen\HyperKitchen_Prototype\backend\venv\Lib\site-packages\sqlalchemy\engine\default.py", line 952, in do_execute
+    cursor.execute(statement, parameters)
+sqlalchemy.exc.OperationalError: (sqlite3.OperationalError) disk I/O error
+[SQL: 
+CREATE TABLE users (
+	id INTEGER NOT NULL, 
+	username VARCHAR(80) NOT NULL, 
+	password_hash VARCHAR(255) NOT NULL, 
+	created_at DATETIME, 
+	PRIMARY KEY (id), 
+	UNIQUE (username)
+)
+
+]
+(Background on this error at: https://sqlalche.me/e/20/e3q8)

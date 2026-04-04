@@ -1,4 +1,5 @@
 import { axiosInstance } from './context/AuthContext';
+import type { Recipe, RecipeDetailPayload } from './types';
 
 export const uploadVideo = async (file: File) => {
   const formData = new FormData();
@@ -19,7 +20,7 @@ export const analyzeVideoLink = async (url: string) => {
 };
 
 export const getRecipes = async () => {
-  const response = await axiosInstance.get('/recipes');
+  const response = await axiosInstance.get<Recipe[]>('/recipes');
   return response.data;
 };
 
@@ -29,6 +30,6 @@ export const createRecipe = async (data: { title: string; description: string; v
 };
 
 export const getVideoStatus = async (fileId: string) => {
-  const response = await axiosInstance.get(`/status/${fileId}`);
+  const response = await axiosInstance.get<RecipeDetailPayload>(`/status/${fileId}`);
   return response.data;
 };

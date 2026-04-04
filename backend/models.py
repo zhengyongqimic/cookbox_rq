@@ -29,10 +29,16 @@ class VideoResource(db.Model):
     filename = db.Column(db.String(255), nullable=False)
     original_filename = db.Column(db.String(255))
     file_path = db.Column(db.String(255))
+    processed_file_path = db.Column(db.String(255))
+    thumbnail_path = db.Column(db.String(255))
+    thumbnail_url = db.Column(db.String(255))
     original_url = db.Column(db.String(512), index=True) # For deduplication by URL
     file_hash = db.Column(db.String(64), index=True)     # For deduplication by content
     upload_time = db.Column(db.DateTime, default=datetime.utcnow)
     status = db.Column(db.String(50), default='pending') # pending, analyzing, completed, error
+    duration_seconds = db.Column(db.Float)
+    has_audio = db.Column(db.Boolean, default=False)
+    processing_version = db.Column(db.Integer, default=1)
     
     steps = db.relationship('RecipeStep', backref='video', lazy=True, cascade="all, delete-orphan")
     recipe = db.relationship('UserRecipe', backref='source_video', uselist=False, lazy=True)
@@ -43,6 +49,10 @@ class VideoResource(db.Model):
             'filename': self.filename,
             'status': self.status,
             'upload_time': self.upload_time.isoformat() if self.upload_time else None,
+            'processed_file_path': self.processed_file_path,
+            'thumbnail_url': self.thumbnail_url,
+            'duration_seconds': self.duration_seconds,
+            'has_audio': self.has_audio,
             'steps': [step.to_dict() for step in self.steps]
         }
 
@@ -61,6 +71,8 @@ class RecipeStep(db.Model):
         return {
             'id': self.id,
             'step_number': self.step_number,
+            'start': self.start_time,
+            'end': self.end_time,
             'start_time': self.start_time,
             'end_time': self.end_time,
             'title': self.title,
@@ -78,7 +90,7 @@ class UserRecipe(db.Model):
     created_at = db.Column(db.DateTime, default=datetime.utcnow)
     
     def to_dict(self):
-        return {
+        data = {
             'id': self.id,
             'user_id': self.user_id,
             'video_id': self.video_id,
@@ -86,3 +98,18 @@ class UserRecipe(db.Model):
             'description': self.description,
             'created_at': self.created_at.isoformat() if self.created_at else None
         }
+        if self.source_video:
+            data.update({
+                'thumbnail_url': self.source_video.thumbnail_url,
+                'duration_seconds': self.source_video.duration_seconds,
+                'video_status': self.source_video.status,
+                'has_audio': self.source_video.has_audio
+            })
+        else:
+            data.update({
+                'thumbnail_url': None,
+                'duration_seconds': None,
+                'video_status': None,
+                'has_audio': None
+            })
+        return data

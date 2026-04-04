@@ -12,8 +12,11 @@ export interface AuthState {
 
 export interface Step {
   id: number;
+  step_number?: number;
   start: number;
   end: number;
+  start_time?: number;
+  end_time?: number;
   title: string;
   description: string;
   highlight?: string;
@@ -29,6 +32,10 @@ export interface Recipe {
   title: string;
   description: string;
   created_at: string;
+  thumbnail_url?: string | null;
+  duration_seconds?: number | null;
+  video_status?: string | null;
+  has_audio?: boolean | null;
 }
 
 export type GestureType = 'next' | 'prev' | 'toggle_pause' | 'overview' | 'resume_overview' | 'open_palm' | null;
@@ -39,4 +46,20 @@ export interface ProcessingStatus {
   progress?: number;
   steps?: Step[];
   message?: string;
+  video_url?: string | null;
+  thumbnail_url?: string | null;
+  duration_seconds?: number | null;
+  has_audio?: boolean | null;
+  original_url?: string | null;
+}
+
+export interface RecipeDetailPayload {
+  file_id: string;
+  status: string;
+  steps: Step[];
+  original_url?: string | null;
+  video_url?: string | null;
+  thumbnail_url?: string | null;
+  duration_seconds?: number | null;
+  has_audio?: boolean | null;
 }
