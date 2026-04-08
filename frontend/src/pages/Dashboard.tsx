@@ -1,6 +1,6 @@
-import React, { useEffect, useState } from 'react';
+import React, { useEffect, useRef, useState } from 'react';
 import { Upload, ChefHat, Loader2, PlayCircle, Link as LinkIcon, LogOut, Plus, X, ArrowLeft } from 'lucide-react';
-import type { GestureType, ProcessingStatus, Recipe, RecipeDetailPayload, Step } from '../types';
+import type { GestureDetectedEvent, GestureType, PauseReason, PlaybackCommand, PlaybackState, ProcessingStatus, Recipe, RecipeDetailPayload, Step } from '../types';
 import { uploadVideo, analyzeVideoLink, getRecipes, createRecipe, getVideoStatus } from '../api';
 import VideoPlayer from '../components/VideoPlayer';
 import StepList from '../components/StepList';
@@ -10,6 +10,7 @@ import RecipeCard from '../components/RecipeCard';
 import GestureCapture from '../components/GestureCapture';
 import io from 'socket.io-client';
 import { useAuth } from '../context/AuthContext';
+import { resolveMediaUrl } from '../utils/media';
 
 const normalizeStep = (step: Step): Step => ({
   ...step,
@@ -30,19 +31,47 @@ const Dashboard = () => {
   const [lastGesture, setLastGesture] = useState<GestureType>(null);
   const [gestureLogs, setGestureLogs] = useState<{ time: string; gesture: string }[]>([]);
   const [originalSource, setOriginalSource] = useState<string | null>(null);
-  const [togglePlayTrigger, setTogglePlayTrigger] = useState<number>(0);
+  const [playbackCommand, setPlaybackCommand] = useState<PlaybackCommand | null>(null);
+  const [playbackState, setPlaybackState] = useState<PlaybackState>('idle');
+  const [pauseReason, setPauseReason] = useState<PauseReason>(null);
   const [playerMuted, setPlayerMuted] = useState(true);
   const [activeRecipeHasAudio, setActiveRecipeHasAudio] = useState<boolean | null>(null);
+  const currentStepIndexRef = useRef(0);
+  const playbackStateRef = useRef<PlaybackState>('idle');
+  const viewRef = useRef<'grid' | 'player' | 'overview'>('grid');
+  const navigationLockRef = useRef(false);
+  const playbackLockRef = useRef(false);
+  const lastConsumedGestureSessionRef = useRef<string | null>(null);
+  const lastConsumedEventIdRef = useRef<string | null>(null);
 
   const [file, setFile] = useState<File | null>(null);
   const [videoLink, setVideoLink] = useState('');
   const [processingStatus, setProcessingStatus] = useState<ProcessingStatus | null>(null);
   const [newRecipeData, setNewRecipeData] = useState({ title: '', description: '', video_id: '' });
   const [isSaving, setIsSaving] = useState(false);
+  const processingThumbnailUrl = resolveMediaUrl(processingStatus?.thumbnail_url);
 
   useEffect(() => {
     fetchRecipes();
   }, []);
+
+  useEffect(() => {
+    currentStepIndexRef.current = currentStepIndex;
+  }, [currentStepIndex]);
+
+  useEffect(() => {
+    playbackStateRef.current = playbackState;
+    if (playbackState !== 'seeking_transition' && playbackState !== 'loading_source') {
+      navigationLockRef.current = false;
+    }
+    if (playbackState === 'playing_step' || playbackState === 'manual_pause' || playbackState === 'step_end_holding' || playbackState === 'error_recoverable') {
+      playbackLockRef.current = false;
+    }
+  }, [playbackState]);
+
+  useEffect(() => {
+    viewRef.current = view;
+  }, [view]);
 
   const fetchRecipes = async () => {
     setLoadingRecipes(true);
@@ -68,7 +97,7 @@ const Dashboard = () => {
       }
     });
 
-    socket.on('gesture_detected', (data: { gesture: GestureType }) => {
+    socket.on('gesture_detected', (data: GestureDetectedEvent) => {
       const log = {
         time: new Date().toLocaleTimeString(),
         gesture: data.gesture || 'unknown',
@@ -140,6 +169,8 @@ const Dashboard = () => {
         setActiveRecipeHasAudio(status.has_audio ?? recipe.has_audio ?? null);
         setCurrentStepIndex(0);
         setPlayerMuted(true);
+        setPauseReason(null);
+        setPlaybackState('loading_source');
         setView('player');
       } else {
         console.error('No steps found for this recipe');
@@ -149,40 +180,78 @@ const Dashboard = () => {
     }
   };
 
-  const handleGesture = (gesture: GestureType) => {
+  const issuePlaybackCommand = (type: PlaybackCommand['type']) => {
+    setPlaybackCommand({ type, token: Date.now() });
+  };
+
+  const handleGesture = (eventOrGesture: GestureDetectedEvent | GestureType) => {
+    if (typeof eventOrGesture !== 'string' && eventOrGesture !== null) {
+      if (eventOrGesture.event_id && eventOrGesture.event_id === lastConsumedEventIdRef.current) {
+        return;
+      }
+      if (eventOrGesture.gesture_session_id && eventOrGesture.gesture_session_id === lastConsumedGestureSessionRef.current) {
+        return;
+      }
+      lastConsumedEventIdRef.current = eventOrGesture.event_id ?? null;
+      lastConsumedGestureSessionRef.current = eventOrGesture.gesture_session_id ?? null;
+    }
+
+    const gesture = typeof eventOrGesture === 'string' || eventOrGesture === null ? eventOrGesture : eventOrGesture.gesture;
     if (!gesture) return;
 
     switch (gesture) {
       case 'next':
-        if (currentStepIndex < steps.length - 1) {
+        if (!navigationLockRef.current && playbackStateRef.current !== 'seeking_transition' && playbackStateRef.current !== 'buffering_recovering' && currentStepIndexRef.current < steps.length - 1) {
+          navigationLockRef.current = true;
+          setPauseReason(null);
+          setPlaybackState('loading_source');
           setCurrentStepIndex((prev) => prev + 1);
           setLastGesture(gesture);
         }
         break;
       case 'prev':
-        if (currentStepIndex > 0) {
+        if (!navigationLockRef.current && playbackStateRef.current !== 'seeking_transition' && playbackStateRef.current !== 'buffering_recovering' && currentStepIndexRef.current > 0) {
+          navigationLockRef.current = true;
+          setPauseReason(null);
+          setPlaybackState('loading_source');
           setCurrentStepIndex((prev) => prev - 1);
           setLastGesture(gesture);
         }
         break;
       case 'overview':
-        if (view !== 'overview') {
+        if (viewRef.current !== 'overview') {
+          setPauseReason(null);
+          setPlaybackState('overview_mode');
           setView('overview');
           setLastGesture(gesture);
         }
         break;
       case 'toggle_pause':
-        if (view === 'player') {
-          setTogglePlayTrigger(Date.now());
+        if (viewRef.current === 'player' && !playbackLockRef.current) {
+          playbackLockRef.current = true;
+          setPauseReason(playbackStateRef.current === 'manual_pause' ? null : 'gesture_pause');
+          issuePlaybackCommand(playbackStateRef.current === 'manual_pause' ? 'resume' : 'pause');
           setLastGesture('toggle_pause');
         }
         break;
       case 'open_palm':
-        if (view === 'overview') {
+        if (viewRef.current === 'overview') {
+          setPauseReason(null);
+          setPlaybackState('loading_source');
           setView('player');
           setLastGesture('resume_overview');
-        } else if (view === 'player') {
-          setTogglePlayTrigger(Date.now());
+        } else if (viewRef.current === 'player' && !playbackLockRef.current) {
+          playbackLockRef.current = true;
+          if (playbackStateRef.current === 'step_end_holding') {
+            setPauseReason(null);
+            issuePlaybackCommand('replay_current');
+          } else if (playbackStateRef.current === 'manual_pause' || playbackStateRef.current === 'error_recoverable') {
+            setPauseReason(null);
+            issuePlaybackCommand('resume');
+          } else {
+            setPauseReason('gesture_pause');
+            issuePlaybackCommand('pause');
+          }
           setLastGesture('toggle_pause');
         }
         break;
@@ -192,7 +261,7 @@ const Dashboard = () => {
   if (view === 'overview') {
     return (
       <div className="min-h-screen bg-zinc-950 text-white p-8 flex flex-col items-center">
-        <GestureCapture enabled={steps.length > 0} onGesture={handleGesture} />
+        <GestureCapture enabled={steps.length > 0} mode="overview_mode" onGesture={handleGesture} />
         <h1 className="text-4xl font-bold mb-8 flex items-center gap-4 text-orange-500">
           <ChefHat size={40} />
           Kitchen Assistant - Overview
@@ -203,11 +272,17 @@ const Dashboard = () => {
           currentStepIndex={currentStepIndex}
           onStepClick={(idx) => {
             setCurrentStepIndex(idx);
+            setPauseReason(null);
+            setPlaybackState('loading_source');
             setView('player');
           }}
         />
         <button
-          onClick={() => setView('player')}
+          onClick={() => {
+            setPlaybackState('loading_source');
+            setPauseReason(null);
+            setView('player');
+          }}
           className="mt-8 px-8 py-3 bg-orange-500 text-white rounded-full font-bold hover:bg-orange-600 transition-colors"
         >
           Resume Cooking
@@ -223,7 +298,11 @@ const Dashboard = () => {
         <div className="flex items-center gap-4">
           {view === 'player' && (
             <button
-              onClick={() => setView('grid')}
+              onClick={() => {
+                setPlaybackState('idle');
+                setPauseReason(null);
+                setView('grid');
+              }}
               className="p-2 bg-zinc-800 rounded-full hover:bg-zinc-700 transition-colors"
               title="Back to Recipes"
             >
@@ -277,7 +356,7 @@ const Dashboard = () => {
           </>
         ) : (
           <div className="w-full flex flex-col items-center gap-8">
-            <GestureCapture enabled={steps.length > 0} onGesture={handleGesture} />
+            <GestureCapture enabled={steps.length > 0} mode={playbackState} onGesture={handleGesture} />
             {steps.length > 0 && (
               <div className="text-sm text-zinc-400 self-start">
                 Step {currentStepIndex + 1} of {steps.length}
@@ -286,18 +365,25 @@ const Dashboard = () => {
 
             <VideoPlayer
               currentStep={steps[currentStepIndex]}
-              onGesture={handleGesture}
               originalSource={originalSource}
-              togglePlayTrigger={togglePlayTrigger}
+              playbackCommand={playbackCommand}
               isMuted={playerMuted}
               onMutedChange={setPlayerMuted}
               hasAudio={activeRecipeHasAudio}
+              playbackState={playbackState}
+              onPlaybackStateChange={setPlaybackState}
+              pauseReason={pauseReason}
+              onPauseReasonChange={setPauseReason}
             />
 
             <StepList
               steps={steps}
               currentStepIndex={currentStepIndex}
-              onStepClick={setCurrentStepIndex}
+              onStepClick={(idx) => {
+                setPauseReason(null);
+                setPlaybackState('loading_source');
+                setCurrentStepIndex(idx);
+              }}
             />
 
             <div className="w-full max-w-4xl bg-zinc-900/50 p-6 rounded-xl border border-zinc-800">
@@ -352,9 +438,9 @@ const Dashboard = () => {
                     </div>
                   </div>
 
-                  {processingStatus.thumbnail_url && (
+                  {processingThumbnailUrl && (
                     <img
-                      src={processingStatus.thumbnail_url}
+                      src={processingThumbnailUrl}
                       alt="Recipe thumbnail"
                       className="w-full aspect-video object-cover rounded-xl border border-zinc-800"
                     />

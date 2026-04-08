@@ -7,11 +7,13 @@ except TypeError:
     # Fallback for older eventlet versions
     eventlet.monkey_patch(socket=True, select=True)
 
-import sys
-# Workaround for MediaPipe Chinese path issue: use C:\Trae_Temp for mediapipe package
-sys.path.insert(0, r'C:\Trae_Temp')
-
 import os
+import sys
+TRAe_MEDIAPIPE_PATH = r'C:\Trae_Temp'
+if os.path.isdir(TRAe_MEDIAPIPE_PATH) and TRAe_MEDIAPIPE_PATH not in sys.path:
+    # Prefer the temp path when it is complete, but fall back if import fails.
+    sys.path.insert(0, TRAe_MEDIAPIPE_PATH)
+
 import time
 import logging
 import base64
@@ -20,7 +22,15 @@ import re
 import uuid
 from datetime import datetime
 import cv2
-import mediapipe as mp
+try:
+    import mediapipe as mp
+except ModuleNotFoundError:
+    if TRAe_MEDIAPIPE_PATH in sys.path:
+        sys.path.remove(TRAe_MEDIAPIPE_PATH)
+    try:
+        import mediapipe as mp
+    except ModuleNotFoundError:
+        mp = None
 import numpy as np
 from flask import Flask, request, jsonify, send_from_directory
 from flask_socketio import SocketIO, emit
@@ -86,25 +96,163 @@ socketio = SocketIO(
 )
 
 # Initialize MediaPipe Solutions
-mp_hands = mp.solutions.hands
-try:
-    hands = mp_hands.Hands(
-        max_num_hands=2,
-        min_detection_confidence=0.7,
-        min_tracking_confidence=0.5
-    )
-    logger.info("MediaPipe Hands initialized successfully")
-except Exception as e:
-    logger.error(f"Failed to initialize MediaPipe: {e}")
+if mp is not None:
+    mp_hands = mp.solutions.hands
+    try:
+        hands = mp_hands.Hands(
+            max_num_hands=2,
+            min_detection_confidence=0.7,
+            min_tracking_confidence=0.5
+        )
+        logger.info("MediaPipe Hands initialized successfully")
+    except Exception as e:
+        logger.error(f"Failed to initialize MediaPipe: {e}")
+        hands = None
+else:
+    logger.warning("MediaPipe not available. Gesture recognition will be disabled.")
+    mp_hands = None
     hands = None
 
 # Global state for gesture control
 gesture_state = {
-    "last_gesture_time": 0,
-    "cooldown": 1.0,  # seconds
-    "current_gesture": None,
-    "history": []
+    "history": [],
+    "lifecycles": {},
+    "event_counter": 0,
 }
+
+GESTURE_MODE_DEFAULT = 'playing_step'
+
+GESTURE_RULES = {
+    'playing_step': {
+        'next': {'window_ms': 450, 'min_hits': 2, 'cooldown_ms': 550, 'release_hits': 2},
+        'prev': {'window_ms': 450, 'min_hits': 2, 'cooldown_ms': 550, 'release_hits': 2},
+        'open_palm': {'window_ms': 600, 'min_hits': 3, 'cooldown_ms': 900, 'release_hits': 3},
+        'overview': {'window_ms': 700, 'min_hits': 3, 'cooldown_ms': 1200, 'release_hits': 4},
+    },
+    'step_end_holding': {
+        'next': {'window_ms': 350, 'min_hits': 2, 'cooldown_ms': 400, 'release_hits': 2},
+        'prev': {'window_ms': 350, 'min_hits': 2, 'cooldown_ms': 400, 'release_hits': 2},
+        'open_palm': {'window_ms': 450, 'min_hits': 2, 'cooldown_ms': 700, 'release_hits': 3},
+        'overview': {'window_ms': 650, 'min_hits': 3, 'cooldown_ms': 1200, 'release_hits': 4},
+    },
+    'manual_pause': {
+        'next': {'window_ms': 450, 'min_hits': 2, 'cooldown_ms': 500, 'release_hits': 2},
+        'prev': {'window_ms': 450, 'min_hits': 2, 'cooldown_ms': 500, 'release_hits': 2},
+        'open_palm': {'window_ms': 450, 'min_hits': 2, 'cooldown_ms': 700, 'release_hits': 3},
+        'overview': {'window_ms': 650, 'min_hits': 3, 'cooldown_ms': 1200, 'release_hits': 4},
+    },
+    'overview_mode': {
+        'open_palm': {'window_ms': 450, 'min_hits': 2, 'cooldown_ms': 800, 'release_hits': 3},
+        'overview': {'window_ms': 750, 'min_hits': 3, 'cooldown_ms': 1400, 'release_hits': 4},
+        'next': {'window_ms': 500, 'min_hits': 2, 'cooldown_ms': 650, 'release_hits': 2},
+        'prev': {'window_ms': 500, 'min_hits': 2, 'cooldown_ms': 650, 'release_hits': 2},
+    },
+}
+
+def normalize_gesture_mode(mode):
+    if mode in GESTURE_RULES:
+        return mode
+    if mode == 'buffering_recovering':
+        return 'manual_pause'
+    if mode == 'seeking_transition':
+        return 'playing_step'
+    return GESTURE_MODE_DEFAULT
+
+def get_gesture_lifecycle(mode, gesture):
+    key = f"{mode}:{gesture}"
+    if key not in gesture_state['lifecycles']:
+        gesture_state['lifecycles'][key] = {
+            'status': 'idle',
+            'release_count': 0,
+            'session_id': None,
+            'last_confirmed_at': 0,
+        }
+    return gesture_state['lifecycles'][key]
+
+def register_gesture_candidate(gesture, mode, current_time):
+    history = gesture_state['history']
+    history.append({'gesture': gesture, 'mode': mode, 'ts': current_time})
+    max_window_seconds = 1.5
+    gesture_state['history'] = [entry for entry in history if current_time - entry['ts'] <= max_window_seconds]
+
+def reset_gesture_lifecycle(gesture, mode):
+    lifecycle = get_gesture_lifecycle(mode, gesture)
+    lifecycle['status'] = 'idle'
+    lifecycle['release_count'] = 0
+    lifecycle['session_id'] = None
+    gesture_state['history'] = [
+        entry for entry in gesture_state['history']
+        if not (entry['gesture'] == gesture and entry['mode'] == mode)
+    ]
+
+def note_gesture_release(gesture, mode):
+    rules = GESTURE_RULES.get(mode, GESTURE_RULES[GESTURE_MODE_DEFAULT]).get(gesture)
+    if not rules:
+        return
+
+    lifecycle = get_gesture_lifecycle(mode, gesture)
+    if lifecycle['status'] == 'idle':
+        return
+
+    lifecycle['release_count'] += 1
+    if lifecycle['release_count'] >= rules.get('release_hits', 2):
+        reset_gesture_lifecycle(gesture, mode)
+
+def confirm_gesture(gesture, mode, current_time):
+    rules = GESTURE_RULES.get(mode, GESTURE_RULES[GESTURE_MODE_DEFAULT]).get(gesture)
+    if not rules:
+        return None
+
+    lifecycle = get_gesture_lifecycle(mode, gesture)
+    if lifecycle['status'] == 'confirmed_locked':
+        return None
+
+    last_trigger_at = lifecycle.get('last_confirmed_at', 0)
+    cooldown_seconds = rules['cooldown_ms'] / 1000
+    if current_time - last_trigger_at < cooldown_seconds:
+        return None
+
+    window_seconds = rules['window_ms'] / 1000
+    candidates = [
+        entry for entry in gesture_state['history']
+        if entry['gesture'] == gesture and entry['mode'] == mode and current_time - entry['ts'] <= window_seconds
+    ]
+    if len(candidates) < rules['min_hits']:
+        return None
+
+    hold_ms = int((candidates[-1]['ts'] - candidates[0]['ts']) * 1000) if len(candidates) > 1 else 0
+    confidence = min(0.99, len(candidates) / max(rules['min_hits'], 1))
+    if lifecycle['session_id'] is None:
+        lifecycle['session_id'] = uuid.uuid4().hex
+    lifecycle['status'] = 'confirmed_locked'
+    lifecycle['release_count'] = 0
+    lifecycle['last_confirmed_at'] = current_time
+    gesture_state['event_counter'] += 1
+    return {
+        'gesture': gesture,
+        'confidence': round(confidence, 2),
+        'hold_ms': hold_ms,
+        'mode': mode,
+        'event_id': f"gesture-{gesture_state['event_counter']}",
+        'gesture_session_id': lifecycle['session_id'],
+    }
+
+def observe_gesture(gesture, mode, current_time):
+    supported_gestures = GESTURE_RULES.get(mode, GESTURE_RULES[GESTURE_MODE_DEFAULT]).keys()
+    for candidate_gesture in supported_gestures:
+        lifecycle = get_gesture_lifecycle(mode, candidate_gesture)
+        if candidate_gesture == gesture:
+            lifecycle['release_count'] = 0
+            if lifecycle['status'] == 'idle':
+                lifecycle['status'] = 'arming'
+                lifecycle['session_id'] = uuid.uuid4().hex
+            register_gesture_candidate(candidate_gesture, mode, current_time)
+            confirmed_gesture = confirm_gesture(candidate_gesture, mode, current_time)
+            if confirmed_gesture:
+                return confirmed_gesture
+        else:
+            note_gesture_release(candidate_gesture, mode)
+    return None
 
 # Video processing status
 processing_status = {}
@@ -957,16 +1105,17 @@ def handle_video_frame(data):
         if frame is None:
             return
 
+        mode = normalize_gesture_mode(data.get('mode'))
         # Process frame
-        gesture = detect_gesture(frame)
+        gesture_event = detect_gesture(frame, mode)
         
-        if gesture:
-            emit('gesture_detected', {'gesture': gesture})
+        if gesture_event:
+            emit('gesture_detected', gesture_event)
             
     except Exception as e:
         logger.error(f"Error handling video frame: {e}")
 
-def detect_gesture(frame):
+def detect_gesture(frame, mode=GESTURE_MODE_DEFAULT):
     """
     Detect gestures using MediaPipe Hands.
     Gestures:
@@ -979,8 +1128,6 @@ def detect_gesture(frame):
     global gesture_state
     
     current_time = time.time()
-    if current_time - gesture_state['last_gesture_time'] < gesture_state['cooldown']:
-        return None
 
     if hands is None:
         return None
@@ -994,7 +1141,7 @@ def detect_gesture(frame):
     hand_results = hands.process(image_rgb)
     
     if not hand_results.multi_hand_landmarks:
-        return None
+        return observe_gesture(None, mode, current_time)
         
     multi_landmarks = hand_results.multi_hand_landmarks
     num_hands = len(multi_landmarks)
@@ -1061,11 +1208,16 @@ def detect_gesture(frame):
                 elif dx > 0.1: # Pointing Left (User perspective) -> Prev
                     detected_gesture = "prev"
 
-    if detected_gesture:
-        gesture_state['last_gesture_time'] = current_time
-        logger.info(f"Gesture detected: {detected_gesture}")
-        return detected_gesture
-        
+    confirmed_gesture = observe_gesture(detected_gesture, mode, current_time)
+    if confirmed_gesture:
+        logger.info(
+            "Gesture detected: %s (%s) session=%s",
+            confirmed_gesture['gesture'],
+            mode,
+            confirmed_gesture['gesture_session_id'],
+        )
+        return confirmed_gesture
+
     return None
 
 @app.route('/api/recipes', methods=['GET', 'POST'])

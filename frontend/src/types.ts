@@ -63,3 +63,32 @@ export interface RecipeDetailPayload {
   duration_seconds?: number | null;
   has_audio?: boolean | null;
 }
+
+export type PlaybackState =
+  | 'idle'
+  | 'loading_source'
+  | 'seeking_transition'
+  | 'playing_step'
+  | 'buffering_recovering'
+  | 'step_end_holding'
+  | 'manual_pause'
+  | 'overview_mode'
+  | 'error_recoverable';
+
+export type PauseReason = 'gesture_pause' | 'step_complete' | 'manual_click' | null;
+
+export type PlaybackCommandType = 'toggle' | 'pause' | 'resume' | 'replay_current';
+
+export interface PlaybackCommand {
+  type: PlaybackCommandType;
+  token: number;
+}
+
+export interface GestureDetectedEvent {
+  gesture: Exclude<GestureType, null>;
+  confidence?: number;
+  hold_ms?: number;
+  mode?: PlaybackState | 'grid';
+  event_id?: string;
+  gesture_session_id?: string;
+}

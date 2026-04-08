@@ -1,6 +1,7 @@
 import React from 'react';
 import { PlayCircle, Clock } from 'lucide-react';
 import type { Recipe } from '../types';
+import { resolveMediaUrl } from '../utils/media';
 
 interface RecipeCardProps {
   recipe: Recipe;
@@ -9,6 +10,7 @@ interface RecipeCardProps {
 
 const RecipeCard: React.FC<RecipeCardProps> = ({ recipe, onClick }) => {
   const [thumbnailFailed, setThumbnailFailed] = React.useState(false);
+  const thumbnailUrl = resolveMediaUrl(recipe.thumbnail_url);
   const durationLabel = recipe.duration_seconds
     ? `${Math.floor(recipe.duration_seconds / 60)}:${Math.floor(recipe.duration_seconds % 60).toString().padStart(2, '0')}`
     : null;
@@ -19,9 +21,9 @@ const RecipeCard: React.FC<RecipeCardProps> = ({ recipe, onClick }) => {
       onClick={onClick}
     >
       <div className="relative aspect-video bg-zinc-900 flex items-center justify-center overflow-hidden">
-        {recipe.thumbnail_url && !thumbnailFailed ? (
+        {thumbnailUrl && !thumbnailFailed ? (
           <img
-            src={recipe.thumbnail_url}
+            src={thumbnailUrl}
             alt={recipe.title}
             className="absolute inset-0 h-full w-full object-cover transition-transform duration-500 group-hover:scale-105"
             onError={() => setThumbnailFailed(true)}

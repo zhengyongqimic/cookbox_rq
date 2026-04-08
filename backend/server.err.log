@@ -1,72 +1,809 @@
-2026-04-04 17:57:57,588 - __main__ - INFO - MediaPipe Hands initialized successfully
+2026-04-06 16:48:17,594 - __main__ - INFO - MediaPipe Hands initialized successfully
 INFO: Created TensorFlow Lite XNNPACK delegate for CPU.
+2026-04-06 16:48:17,615 - werkzeug - INFO -  * Restarting with stat
+2026-04-06 16:48:19,534 - __main__ - INFO - MediaPipe Hands initialized successfully
+INFO: Created TensorFlow Lite XNNPACK delegate for CPU.
+2026-04-06 16:48:19,566 - werkzeug - WARNING -  * Debugger is active!
+2026-04-06 16:48:19,570 - werkzeug - INFO -  * Debugger PIN: 905-742-844
+(16248) wsgi starting up on http://0.0.0.0:5000
+(16248) accepted ('127.0.0.1', 62136)
+127.0.0.1 - - [06/Apr/2026 16:53:25] "GET /health HTTP/1.1" 200 230 0.003080
+(16248) accepted ('127.0.0.1', 53144)
+D:\HyperKitchen_Prototype\backend\venv\Lib\site-packages\jwt\api_jwt.py:371: InsecureKeyLengthWarning: The HMAC key is 27 bytes long, which is below the minimum recommended length of 32 bytes for SHA256. See RFC 7518 Section 3.2.
+  decoded = self.decode_complete(
+127.0.0.1 - - [06/Apr/2026 16:54:01] "GET /api/recipes HTTP/1.1" 401 207 0.003065
+(16248) accepted ('127.0.0.1', 53146)
+D:\HyperKitchen_Prototype\backend\app.py:460: LegacyAPIWarning: The Query.get() method is considered legacy as of the 1.x series of SQLAlchemy and becomes a legacy construct in 2.0. The method is now available as Session.get() (deprecated since: 2.0) (Background on SQLAlchemy 2.0 at: https://sqlalche.me/e/b8d9)
+  video = VideoResource.query.get(file_id)
+127.0.0.1 - - [06/Apr/2026 16:54:01] "GET /api/status/9a871ea9-c4bc-49f1-b784-a9ae2f953f4a HTTP/1.1" 200 4211 0.008618
+(16248) accepted ('127.0.0.1', 52065)
+127.0.0.1 - - [06/Apr/2026 16:54:20] "GET /thumbnails/c39dcb35-e358-43c0-8b8c-216510290992.jpg HTTP/1.1" 200 105568 0.003141
+(16248) accepted ('127.0.0.1', 52066)
+127.0.0.1 - - [06/Apr/2026 16:54:20] "HEAD /videos/c39dcb35-e358-43c0-8b8c-216510290992_processed.mp4 HTTP/1.1" 200 372 0.001551
+(16248) accepted ('127.0.0.1', 54467)
+127.0.0.1 - - [06/Apr/2026 16:54:32] "GET /api/recipes HTTP/1.1" 200 922 0.005070
+(16248) accepted ('127.0.0.1', 59888)
+D:\HyperKitchen_Prototype\backend\venv\Lib\site-packages\jwt\api_jwt.py:153: InsecureKeyLengthWarning: The HMAC key is 27 bytes long, which is below the minimum recommended length of 32 bytes for SHA256. See RFC 7518 Section 3.2.
+  return self._jws.encode(
+127.0.0.1 - - [06/Apr/2026 16:55:31] "POST /api/auth/login HTTP/1.1" 200 647 0.089749
+(16248) accepted ('127.0.0.1', 50176)
+127.0.0.1 - - [06/Apr/2026 16:55:31] "GET /api/logs HTTP/1.1" 200 161 0.001321
+(16248) accepted ('127.0.0.1', 56781)
+(16248) accepted ('127.0.0.1', 56782)
+(16248) accepted ('127.0.0.1', 56783)
+(16248) accepted ('127.0.0.1', 56784)
+127.0.0.1 - - [06/Apr/2026 16:55:31] "GET /socket.io/?EIO=4&transport=polling&t=ygeaw2dd HTTP/1.1" 200 296 0.000000
+127.0.0.1 - - [06/Apr/2026 16:55:31] "GET /socket.io/?EIO=4&transport=polling&t=ygeaxifp HTTP/1.1" 200 296 0.000000
+127.0.0.1 - - [06/Apr/2026 16:55:31] "GET /socket.io/?EIO=4&transport=polling&t=ygeayocg HTTP/1.1" 200 296 0.001283
+127.0.0.1 - - [06/Apr/2026 16:55:31] "GET /socket.io/?EIO=4&transport=polling&t=ygeaylp9 HTTP/1.1" 200 296 0.001005
+(16248) accepted ('127.0.0.1', 56785)
+127.0.0.1 - - [06/Apr/2026 16:55:31] "GET /api/recipes HTTP/1.1" 200 917 0.003048
+(16248) accepted ('127.0.0.1', 58393)
+127.0.0.1 - - [06/Apr/2026 16:55:31] "GET /api/logs HTTP/1.1" 200 161 0.000000
+(16248) accepted ('127.0.0.1', 56980)
+127.0.0.1 - - [06/Apr/2026 16:55:31] "GET /api/recipes HTTP/1.1" 200 917 0.005992
+(16248) accepted ('127.0.0.1', 50007)
+(16248) accepted ('127.0.0.1', 50008)
+(16248) accepted ('127.0.0.1', 50009)
+(16248) accepted ('127.0.0.1', 50010)
+(16248) accepted ('127.0.0.1', 50011)
+127.0.0.1 - - [06/Apr/2026 16:55:31] "POST /socket.io/?EIO=4&transport=polling&t=ygec90s7&sid=9ONV8aSWbNyZ0lvCAAAD HTTP/1.1" 200 214 0.001994
+127.0.0.1 - - [06/Apr/2026 16:55:31] "GET /socket.io/?EIO=4&transport=polling&t=ygecakyu&sid=9ONV8aSWbNyZ0lvCAAAD HTTP/1.1" 200 208 0.000000
+127.0.0.1 - - [06/Apr/2026 16:55:31] "GET /socket.io/?EIO=4&transport=polling&t=ygec9hqk&sid=M5tcLvYPip4AmL8sAAAC HTTP/1.1" 200 176 0.000000
+127.0.0.1 - - [06/Apr/2026 16:55:31] "POST /socket.io/?EIO=4&transport=polling&t=ygec8wc5&sid=M5tcLvYPip4AmL8sAAAC HTTP/1.1" 200 214 0.000000
+(16248) accepted ('127.0.0.1', 51656)
+(16248) accepted ('127.0.0.1', 51657)
+(16248) accepted ('127.0.0.1', 51658)
+127.0.0.1 - - [06/Apr/2026 16:55:31] "GET /socket.io/?EIO=4&transport=polling&t=ygecy2eb&sid=M5tcLvYPip4AmL8sAAAC HTTP/1.1" 200 176 0.000512
+127.0.0.1 - - [06/Apr/2026 16:55:31] "GET /socket.io/?EIO=4&transport=polling&t=ygecxvbq&sid=9ONV8aSWbNyZ0lvCAAAD HTTP/1.1" 200 176 0.021364
+(16248) accepted ('127.0.0.1', 51747)
+127.0.0.1 - - [06/Apr/2026 16:55:31] "GET /socket.io/?EIO=4&transport=polling&t=ygedlo3v&sid=M5tcLvYPip4AmL8sAAAC HTTP/1.1" 200 176 0.000390
+(16248) accepted ('127.0.0.1', 52133)
+127.0.0.1 - - [06/Apr/2026 16:55:41] "GET /api/status/9a871ea9-c4bc-49f1-b784-a9ae2f953f4a HTTP/1.1" 200 4206 0.002019
+(16248) accepted ('127.0.0.1', 60322)
+127.0.0.1 - - [06/Apr/2026 16:55:41] "GET /socket.io/?EIO=4&transport=polling&t=yglsic27 HTTP/1.1" 200 296 0.000000
+(16248) accepted ('127.0.0.1', 59182)
+127.0.0.1 - - [06/Apr/2026 16:55:41] "GET /socket.io/?EIO=4&transport=polling&t=yglslc8v HTTP/1.1" 200 296 0.000000
+(16248) accepted ('127.0.0.1', 50929)
+(16248) accepted ('127.0.0.1', 57558)
+(16248) accepted ('127.0.0.1', 57559)
+(16248) accepted ('127.0.0.1', 57560)
+127.0.0.1 - - [06/Apr/2026 16:55:41] "POST /socket.io/?EIO=4&transport=polling&t=yglstegy&sid=yrjVEnb2qqGaKzJIAAAH HTTP/1.1" 200 214 0.000000
+127.0.0.1 - - [06/Apr/2026 16:55:41] "GET /socket.io/?EIO=4&transport=polling&t=yglsuzr3&sid=yrjVEnb2qqGaKzJIAAAH HTTP/1.1" 200 208 0.000000
 Traceback (most recent call last):
-  File "D:\Projects\HyperKitchen\HyperKitchen_Prototype\backend\venv\Lib\site-packages\sqlalchemy\engine\base.py", line 1967, in _exec_single_context
-    self.dialect.do_execute(
-  File "D:\Projects\HyperKitchen\HyperKitchen_Prototype\backend\venv\Lib\site-packages\sqlalchemy\engine\default.py", line 952, in do_execute
-    cursor.execute(statement, parameters)
+  File "D:\HyperKitchen_Prototype\backend\venv\Lib\site-packages\eventlet\wsgi.py", line 596, in handle_one_response
+    write(b''.join(towrite))
+  File "D:\HyperKitchen_Prototype\backend\venv\Lib\site-packages\eventlet\wsgi.py", line 533, in write
+    wfile.flush()
+  File "C:\myApps\Python\Lib\socket.py", line 724, in write
+    return self._sock.send(b)
+           ^^^^^^^^^^^^^^^^^^
+  File "D:\HyperKitchen_Prototype\backend\venv\Lib\site-packages\eventlet\greenio\base.py", line 401, in send
+    return self._send_loop(self.fd.send, data, flags)
+           ^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^
+  File "D:\HyperKitchen_Prototype\backend\venv\Lib\site-packages\eventlet\greenio\base.py", line 388, in _send_loop
+    return send_method(data, *args)
+           ^^^^^^^^^^^^^^^^^^^^^^^^
+ConnectionResetError: [WinError 10054] 远程主机强迫关闭了一个现有的连接。
+
+127.0.0.1 - - [06/Apr/2026 16:55:41] "GET /videos/9a871ea9-c4bc-49f1-b784-a9ae2f953f4a_processed.mp4 HTTP/1.1" 206 1868218 0.029133
+(16248) accepted ('127.0.0.1', 61144)
+(16248) accepted ('127.0.0.1', 50630)
+127.0.0.1 - - [06/Apr/2026 16:55:41] "GET /socket.io/?EIO=4&transport=polling&t=ygltbpq0&sid=yrjVEnb2qqGaKzJIAAAH HTTP/1.1" 200 176 0.000000
+127.0.0.1 - - [06/Apr/2026 16:55:41] "GET /videos/9a871ea9-c4bc-49f1-b784-a9ae2f953f4a_processed.mp4 HTTP/1.1" 206 157321 0.003415
+(16248) accepted ('127.0.0.1', 55821)
+127.0.0.1 - - [06/Apr/2026 16:55:41] "GET /videos/9a871ea9-c4bc-49f1-b784-a9ae2f953f4a_processed.mp4 HTTP/1.1" 206 57790 0.001137
+(16248) accepted ('127.0.0.1', 60375)
+127.0.0.1 - - [06/Apr/2026 16:55:41] "GET /videos/9a871ea9-c4bc-49f1-b784-a9ae2f953f4a_processed.mp4 HTTP/1.1" 206 59016 0.001249
+(16248) accepted ('127.0.0.1', 65153)
+Traceback (most recent call last):
+  File "D:\HyperKitchen_Prototype\backend\venv\Lib\site-packages\eventlet\wsgi.py", line 596, in handle_one_response
+    write(b''.join(towrite))
+  File "D:\HyperKitchen_Prototype\backend\venv\Lib\site-packages\eventlet\wsgi.py", line 533, in write
+    wfile.flush()
+  File "C:\myApps\Python\Lib\socket.py", line 724, in write
+    return self._sock.send(b)
+           ^^^^^^^^^^^^^^^^^^
+  File "D:\HyperKitchen_Prototype\backend\venv\Lib\site-packages\eventlet\greenio\base.py", line 401, in send
+    return self._send_loop(self.fd.send, data, flags)
+           ^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^
+  File "D:\HyperKitchen_Prototype\backend\venv\Lib\site-packages\eventlet\greenio\base.py", line 388, in _send_loop
+    return send_method(data, *args)
+           ^^^^^^^^^^^^^^^^^^^^^^^^
+ConnectionResetError: [WinError 10054] 远程主机强迫关闭了一个现有的连接。
+
+127.0.0.1 - - [06/Apr/2026 16:55:45] "GET /videos/9a871ea9-c4bc-49f1-b784-a9ae2f953f4a_processed.mp4 HTTP/1.1" 206 8692158 3.815880
+(16248) accepted ('127.0.0.1', 54880)
+127.0.0.1 - - [06/Apr/2026 16:55:50] "GET /socket.io/?EIO=4&transport=polling&t=ygs0nm4v HTTP/1.1" 200 296 0.000000
+127.0.0.1 - - [06/Apr/2026 16:55:50] "GET /socket.io/?EIO=4&transport=websocket&sid=yrjVEnb2qqGaKzJIAAAH HTTP/1.1" 200 0 8.899007
+(16248) accepted ('127.0.0.1', 58217)
+(16248) accepted ('127.0.0.1', 58218)
+(16248) accepted ('127.0.0.1', 58219)
+127.0.0.1 - - [06/Apr/2026 16:55:50] "POST /socket.io/?EIO=4&transport=polling&t=ygsoeqbg&sid=X5EakY_6BjijWY5bAAAJ HTTP/1.1" 200 214 0.000000
+127.0.0.1 - - [06/Apr/2026 16:55:50] "GET /socket.io/?EIO=4&transport=polling&t=ygsofu0j&sid=X5EakY_6BjijWY5bAAAJ HTTP/1.1" 200 208 0.001499
+(16248) accepted ('127.0.0.1', 64921)
+(16248) accepted ('127.0.0.1', 64922)
+127.0.0.1 - - [06/Apr/2026 16:55:50] "GET /socket.io/?EIO=4&transport=polling&t=ygsopxto&sid=X5EakY_6BjijWY5bAAAJ HTTP/1.1" 200 176 0.000000
+127.0.0.1 - - [06/Apr/2026 16:55:50] "POST /socket.io/?EIO=4&transport=polling&t=ygsopfve&sid=X5EakY_6BjijWY5bAAAJ HTTP/1.1" 200 214 0.000000
+2026-04-06 16:55:57,756 - __main__ - INFO - Gesture detected: next
+(16248) accepted ('127.0.0.1', 61744)
+127.0.0.1 - - [06/Apr/2026 16:55:58] "GET /socket.io/?EIO=4&transport=polling&t=ygykuj5j HTTP/1.1" 200 296 0.000000
+127.0.0.1 - - [06/Apr/2026 16:55:58] "GET /socket.io/?EIO=4&transport=websocket&sid=X5EakY_6BjijWY5bAAAJ HTTP/1.1" 200 0 7.764232
+(16248) accepted ('127.0.0.1', 65328)
+(16248) accepted ('127.0.0.1', 65329)
+(16248) accepted ('127.0.0.1', 65330)
+127.0.0.1 - - [06/Apr/2026 16:55:58] "POST /socket.io/?EIO=4&transport=polling&t=ygyof0cv&sid=mFUKYD77UN2GM8VzAAAL HTTP/1.1" 200 214 0.001066
+127.0.0.1 - - [06/Apr/2026 16:55:58] "GET /socket.io/?EIO=4&transport=polling&t=ygyofgni&sid=mFUKYD77UN2GM8VzAAAL HTTP/1.1" 200 208 0.000000
+(16248) accepted ('127.0.0.1', 52647)
+(16248) accepted ('127.0.0.1', 52648)
+127.0.0.1 - - [06/Apr/2026 16:55:58] "GET /socket.io/?EIO=4&transport=polling&t=ygyoo9cj&sid=mFUKYD77UN2GM8VzAAAL HTTP/1.1" 200 176 0.000000
+127.0.0.1 - - [06/Apr/2026 16:55:58] "POST /socket.io/?EIO=4&transport=polling&t=ygyoor5u&sid=mFUKYD77UN2GM8VzAAAL HTTP/1.1" 200 214 0.000000
+(16248) accepted ('127.0.0.1', 64172)
+127.0.0.1 - - [06/Apr/2026 16:56:00] "GET /socket.io/?EIO=4&transport=polling&t=yh04se6b HTTP/1.1" 200 296 0.000703
+127.0.0.1 - - [06/Apr/2026 16:56:00] "GET /socket.io/?EIO=4&transport=websocket&sid=mFUKYD77UN2GM8VzAAAL HTTP/1.1" 200 0 2.843437
+(16248) accepted ('127.0.0.1', 61803)
+(16248) accepted ('127.0.0.1', 61804)
+(16248) accepted ('127.0.0.1', 61805)
+127.0.0.1 - - [06/Apr/2026 16:56:00] "POST /socket.io/?EIO=4&transport=polling&t=yh0vpgqj&sid=AAuwYv82MqndZAJOAAAN HTTP/1.1" 200 214 0.001503
+127.0.0.1 - - [06/Apr/2026 16:56:00] "GET /socket.io/?EIO=4&transport=polling&t=yh0vphje&sid=AAuwYv82MqndZAJOAAAN HTTP/1.1" 200 208 0.001503
+(16248) accepted ('127.0.0.1', 50312)
+(16248) accepted ('127.0.0.1', 50313)
+127.0.0.1 - - [06/Apr/2026 16:56:00] "POST /socket.io/?EIO=4&transport=polling&t=yh0vyhhg&sid=AAuwYv82MqndZAJOAAAN HTTP/1.1" 200 214 0.000997
+127.0.0.1 - - [06/Apr/2026 16:56:00] "GET /socket.io/?EIO=4&transport=polling&t=yh0vywy3&sid=AAuwYv82MqndZAJOAAAN HTTP/1.1" 200 176 0.000000
+2026-04-06 16:56:01,218 - __main__ - INFO - Gesture detected: open_palm
+(16248) accepted ('127.0.0.1', 63620)
+127.0.0.1 - - [06/Apr/2026 16:56:01] "GET /socket.io/?EIO=4&transport=polling&t=yh13mv53 HTTP/1.1" 200 296 0.000000
+127.0.0.1 - - [06/Apr/2026 16:56:01] "GET /socket.io/?EIO=4&transport=websocket&sid=AAuwYv82MqndZAJOAAAN HTTP/1.1" 200 0 0.334534
+(16248) accepted ('127.0.0.1', 64449)
+(16248) accepted ('127.0.0.1', 64450)
+(16248) accepted ('127.0.0.1', 64451)
+127.0.0.1 - - [06/Apr/2026 16:56:01] "POST /socket.io/?EIO=4&transport=polling&t=yh158w47&sid=7sL4f8kOf2TBmPzZAAAP HTTP/1.1" 200 214 0.000000
+127.0.0.1 - - [06/Apr/2026 16:56:01] "GET /socket.io/?EIO=4&transport=polling&t=yh158kj9&sid=7sL4f8kOf2TBmPzZAAAP HTTP/1.1" 200 176 0.000000
+(16248) accepted ('127.0.0.1', 59310)
+127.0.0.1 - - [06/Apr/2026 16:56:03] "GET /socket.io/?EIO=4&transport=polling&t=yh2njlni HTTP/1.1" 200 296 0.000000
+127.0.0.1 - - [06/Apr/2026 16:56:03] "GET /socket.io/?EIO=4&transport=websocket&sid=7sL4f8kOf2TBmPzZAAAP HTTP/1.1" 200 0 2.391645
+(16248) accepted ('127.0.0.1', 58991)
+(16248) accepted ('127.0.0.1', 58992)
+(16248) accepted ('127.0.0.1', 58993)
+127.0.0.1 - - [06/Apr/2026 16:56:03] "POST /socket.io/?EIO=4&transport=polling&t=yh2zwggf&sid=c9fSnOUT3RChfDWoAAAR HTTP/1.1" 200 214 0.000000
+127.0.0.1 - - [06/Apr/2026 16:56:03] "GET /socket.io/?EIO=4&transport=polling&t=yh2zxpfk&sid=c9fSnOUT3RChfDWoAAAR HTTP/1.1" 200 208 0.000000
+(16248) accepted ('127.0.0.1', 56170)
+(16248) accepted ('127.0.0.1', 56171)
+127.0.0.1 - - [06/Apr/2026 16:56:03] "POST /socket.io/?EIO=4&transport=polling&t=yh304ytl&sid=c9fSnOUT3RChfDWoAAAR HTTP/1.1" 200 214 0.000000
+127.0.0.1 - - [06/Apr/2026 16:56:03] "GET /socket.io/?EIO=4&transport=polling&t=yh303e1l&sid=c9fSnOUT3RChfDWoAAAR HTTP/1.1" 200 176 0.000000
+2026-04-06 16:56:05,249 - __main__ - INFO - Gesture detected: open_palm
+(16248) accepted ('127.0.0.1', 55294)
+127.0.0.1 - - [06/Apr/2026 16:56:05] "GET /socket.io/?EIO=4&transport=polling&t=yh499qre HTTP/1.1" 200 296 0.000965
+127.0.0.1 - - [06/Apr/2026 16:56:05] "GET /socket.io/?EIO=4&transport=websocket&sid=c9fSnOUT3RChfDWoAAAR HTTP/1.1" 200 0 1.648733
+(16248) accepted ('127.0.0.1', 49746)
+(16248) accepted ('127.0.0.1', 49747)
+(16248) accepted ('127.0.0.1', 49748)
+127.0.0.1 - - [06/Apr/2026 16:56:05] "POST /socket.io/?EIO=4&transport=polling&t=yh49xxvb&sid=8QreiqSM0jsztepaAAAT HTTP/1.1" 200 214 0.001502
+127.0.0.1 - - [06/Apr/2026 16:56:05] "GET /socket.io/?EIO=4&transport=polling&t=yh49xtq1&sid=8QreiqSM0jsztepaAAAT HTTP/1.1" 200 208 0.001502
+(16248) accepted ('127.0.0.1', 58936)
+(16248) accepted ('127.0.0.1', 58937)
+127.0.0.1 - - [06/Apr/2026 16:56:05] "GET /socket.io/?EIO=4&transport=polling&t=yh4a59y0&sid=8QreiqSM0jsztepaAAAT HTTP/1.1" 200 176 0.000000
+127.0.0.1 - - [06/Apr/2026 16:56:05] "POST /socket.io/?EIO=4&transport=polling&t=yh4a5xsr&sid=8QreiqSM0jsztepaAAAT HTTP/1.1" 200 214 0.000000
+(16248) accepted ('127.0.0.1', 62533)
+127.0.0.1 - - [06/Apr/2026 16:56:07] "GET /socket.io/?EIO=4&transport=polling&t=yh5t08cl HTTP/1.1" 200 296 0.000000
+127.0.0.1 - - [06/Apr/2026 16:56:07] "GET /socket.io/?EIO=4&transport=websocket&sid=8QreiqSM0jsztepaAAAT HTTP/1.1" 200 0 2.382747
+(16248) accepted ('127.0.0.1', 55751)
+(16248) accepted ('127.0.0.1', 55752)
+(16248) accepted ('127.0.0.1', 55753)
+127.0.0.1 - - [06/Apr/2026 16:56:07] "POST /socket.io/?EIO=4&transport=polling&t=yh64bod2&sid=kgm3nO71ZTc8EKUTAAAV HTTP/1.1" 200 214 0.000502
+127.0.0.1 - - [06/Apr/2026 16:56:07] "GET /socket.io/?EIO=4&transport=polling&t=yh64czxc&sid=kgm3nO71ZTc8EKUTAAAV HTTP/1.1" 200 208 0.000000
+(16248) accepted ('127.0.0.1', 63555)
+(16248) accepted ('127.0.0.1', 63556)
+127.0.0.1 - - [06/Apr/2026 16:56:07] "GET /socket.io/?EIO=4&transport=polling&t=yh64jrna&sid=kgm3nO71ZTc8EKUTAAAV HTTP/1.1" 200 176 0.000000
+127.0.0.1 - - [06/Apr/2026 16:56:07] "POST /socket.io/?EIO=4&transport=polling&t=yh64kf4y&sid=kgm3nO71ZTc8EKUTAAAV HTTP/1.1" 200 214 0.000000
+2026-04-06 16:56:23,788 - __main__ - INFO - Gesture detected: next
+(16248) accepted ('127.0.0.1', 56294)
+127.0.0.1 - - [06/Apr/2026 16:56:24] "GET /socket.io/?EIO=4&transport=polling&t=yhiurx8s HTTP/1.1" 200 296 0.001009
+127.0.0.1 - - [06/Apr/2026 16:56:24] "GET /socket.io/?EIO=4&transport=websocket&sid=kgm3nO71ZTc8EKUTAAAV HTTP/1.1" 200 0 16.630748
+(16248) accepted ('127.0.0.1', 52552)
+(16248) accepted ('127.0.0.1', 52553)
+(16248) accepted ('127.0.0.1', 52554)
+127.0.0.1 - - [06/Apr/2026 16:56:24] "POST /socket.io/?EIO=4&transport=polling&t=yhiyoda1&sid=ZsjYkkWQhlpFUw-CAAAX HTTP/1.1" 200 214 0.000000
+127.0.0.1 - - [06/Apr/2026 16:56:24] "GET /socket.io/?EIO=4&transport=polling&t=yhiyoqbg&sid=ZsjYkkWQhlpFUw-CAAAX HTTP/1.1" 200 208 0.000000
+(16248) accepted ('127.0.0.1', 63650)
+(16248) accepted ('127.0.0.1', 63651)
+127.0.0.1 - - [06/Apr/2026 16:56:24] "POST /socket.io/?EIO=4&transport=polling&t=yhiywir5&sid=ZsjYkkWQhlpFUw-CAAAX HTTP/1.1" 200 214 0.000000
+127.0.0.1 - - [06/Apr/2026 16:56:24] "GET /socket.io/?EIO=4&transport=polling&t=yhiyw9gg&sid=ZsjYkkWQhlpFUw-CAAAX HTTP/1.1" 200 176 0.000000
+(16248) accepted ('127.0.0.1', 53734)
+127.0.0.1 - - [06/Apr/2026 16:56:27] "GET /socket.io/?EIO=4&transport=polling&t=yhkeoe8r HTTP/1.1" 200 296 0.000000
+127.0.0.1 - - [06/Apr/2026 16:56:27] "GET /socket.io/?EIO=4&transport=websocket&sid=ZsjYkkWQhlpFUw-CAAAX HTTP/1.1" 200 0 3.011680
+(16248) accepted ('127.0.0.1', 61108)
+(16248) accepted ('127.0.0.1', 61109)
+127.0.0.1 - - [06/Apr/2026 16:56:27] "POST /socket.io/?EIO=4&transport=polling&t=yhlalb4g&sid=WhijNYSyXVmSYCarAAAZ HTTP/1.1" 200 214 0.001109
+(16248) accepted ('127.0.0.1', 61110)
+127.0.0.1 - - [06/Apr/2026 16:56:27] "GET /socket.io/?EIO=4&transport=polling&t=yhlalku3&sid=WhijNYSyXVmSYCarAAAZ HTTP/1.1" 200 208 0.000000
+(16248) accepted ('127.0.0.1', 59080)
+(16248) accepted ('127.0.0.1', 59081)
+127.0.0.1 - - [06/Apr/2026 16:56:27] "GET /socket.io/?EIO=4&transport=polling&t=yhlav3ss&sid=WhijNYSyXVmSYCarAAAZ HTTP/1.1" 200 176 0.000000
+127.0.0.1 - - [06/Apr/2026 16:56:27] "POST /socket.io/?EIO=4&transport=polling&t=yhlavy26&sid=WhijNYSyXVmSYCarAAAZ HTTP/1.1" 200 214 0.000000
+(16248) accepted ('127.0.0.1', 52767)
+(16248) accepted ('127.0.0.1', 60187)
+Traceback (most recent call last):
+  File "D:\HyperKitchen_Prototype\backend\venv\Lib\site-packages\eventlet\wsgi.py", line 596, in handle_one_response
+    write(b''.join(towrite))
+  File "D:\HyperKitchen_Prototype\backend\venv\Lib\site-packages\eventlet\wsgi.py", line 533, in write
+    wfile.flush()
+  File "C:\myApps\Python\Lib\socket.py", line 724, in write
+    return self._sock.send(b)
+           ^^^^^^^^^^^^^^^^^^
+  File "D:\HyperKitchen_Prototype\backend\venv\Lib\site-packages\eventlet\greenio\base.py", line 401, in send
+    return self._send_loop(self.fd.send, data, flags)
+           ^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^
+  File "D:\HyperKitchen_Prototype\backend\venv\Lib\site-packages\eventlet\greenio\base.py", line 388, in _send_loop
+    return send_method(data, *args)
+           ^^^^^^^^^^^^^^^^^^^^^^^^
+ConnectionResetError: [WinError 10054] 远程主机强迫关闭了一个现有的连接。
+
+127.0.0.1 - - [06/Apr/2026 16:56:34] "GET /videos/9a871ea9-c4bc-49f1-b784-a9ae2f953f4a_processed.mp4 HTTP/1.1" 206 508349 4.667603
+2026-04-06 16:56:38,292 - __main__ - INFO - Gesture detected: open_palm
+Traceback (most recent call last):
+  File "D:\HyperKitchen_Prototype\backend\venv\Lib\site-packages\eventlet\wsgi.py", line 596, in handle_one_response
+    write(b''.join(towrite))
+  File "D:\HyperKitchen_Prototype\backend\venv\Lib\site-packages\eventlet\wsgi.py", line 533, in write
+    wfile.flush()
+  File "C:\myApps\Python\Lib\socket.py", line 724, in write
+    return self._sock.send(b)
+           ^^^^^^^^^^^^^^^^^^
+  File "D:\HyperKitchen_Prototype\backend\venv\Lib\site-packages\eventlet\greenio\base.py", line 401, in send
+    return self._send_loop(self.fd.send, data, flags)
+           ^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^
+  File "D:\HyperKitchen_Prototype\backend\venv\Lib\site-packages\eventlet\greenio\base.py", line 388, in _send_loop
+    return send_method(data, *args)
+           ^^^^^^^^^^^^^^^^^^^^^^^^
+ConnectionAbortedError: [WinError 10053] 你的主机中的软件中止了一个已建立的连接。
+
+127.0.0.1 - - [06/Apr/2026 16:56:38] "GET /videos/9a871ea9-c4bc-49f1-b784-a9ae2f953f4a_processed.mp4 HTTP/1.1" 206 197056 3.664115
+Traceback (most recent call last):
+  File "D:\HyperKitchen_Prototype\backend\venv\Lib\site-packages\eventlet\hubs\selects.py", line 59, in wait
+    listeners.get(fileno, hub.noop).cb(fileno)
+  File "D:\HyperKitchen_Prototype\backend\venv\Lib\site-packages\eventlet\greenthread.py", line 221, in main
+    result = function(*args, **kwargs)
+             ^^^^^^^^^^^^^^^^^^^^^^^^^
+  File "D:\HyperKitchen_Prototype\backend\venv\Lib\site-packages\eventlet\wsgi.py", line 837, in process_request
+    proto.__init__(conn_state, self)
+  File "D:\HyperKitchen_Prototype\backend\venv\Lib\site-packages\eventlet\wsgi.py", line 352, in __init__
+    self.finish()
+  File "D:\HyperKitchen_Prototype\backend\venv\Lib\site-packages\eventlet\wsgi.py", line 751, in finish
+    BaseHTTPServer.BaseHTTPRequestHandler.finish(self)
+  File "C:\myApps\Python\Lib\socketserver.py", line 819, in finish
+    self.wfile.close()
+  File "C:\myApps\Python\Lib\socket.py", line 724, in write
+    return self._sock.send(b)
+           ^^^^^^^^^^^^^^^^^^
+  File "D:\HyperKitchen_Prototype\backend\venv\Lib\site-packages\eventlet\greenio\base.py", line 401, in send
+    return self._send_loop(self.fd.send, data, flags)
+           ^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^
+  File "D:\HyperKitchen_Prototype\backend\venv\Lib\site-packages\eventlet\greenio\base.py", line 388, in _send_loop
+    return send_method(data, *args)
+           ^^^^^^^^^^^^^^^^^^^^^^^^
+ConnectionAbortedError: [WinError 10053] 你的主机中的软件中止了一个已建立的连接。
+Removing descriptor: 2860
+(16248) accepted ('127.0.0.1', 52385)
+127.0.0.1 - - [06/Apr/2026 16:56:38] "GET /socket.io/?EIO=4&transport=polling&t=yhtydnhm HTTP/1.1" 200 296 0.000529
+127.0.0.1 - - [06/Apr/2026 16:56:38] "GET /socket.io/?EIO=4&transport=websocket&sid=WhijNYSyXVmSYCarAAAZ HTTP/1.1" 200 0 11.415136
+(16248) accepted ('127.0.0.1', 57850)
+(16248) accepted ('127.0.0.1', 57851)
+(16248) accepted ('127.0.0.1', 57852)
+127.0.0.1 - - [06/Apr/2026 16:56:38] "POST /socket.io/?EIO=4&transport=polling&t=yhu3xh0i&sid=rxEIA7rot1lYvkT-AAAb HTTP/1.1" 200 214 0.000000
+127.0.0.1 - - [06/Apr/2026 16:56:38] "GET /socket.io/?EIO=4&transport=polling&t=yhu3y99f&sid=rxEIA7rot1lYvkT-AAAb HTTP/1.1" 200 208 0.001030
+(16248) accepted ('127.0.0.1', 63727)
+127.0.0.1 - - [06/Apr/2026 16:56:40] "GET /socket.io/?EIO=4&transport=polling&t=yhvi4usf HTTP/1.1" 200 296 0.000000
+127.0.0.1 - - [06/Apr/2026 16:56:40] "GET /socket.io/?EIO=4&transport=websocket&sid=rxEIA7rot1lYvkT-AAAb HTTP/1.1" 200 0 2.117780
+(16248) accepted ('127.0.0.1', 58858)
+(16248) accepted ('127.0.0.1', 58859)
+(16248) accepted ('127.0.0.1', 58860)
+127.0.0.1 - - [06/Apr/2026 16:56:40] "GET /socket.io/?EIO=4&transport=polling&t=yhvr0bxm&sid=s9biXxuaEpWyi244AAAd HTTP/1.1" 200 176 0.000000
+127.0.0.1 - - [06/Apr/2026 16:56:40] "POST /socket.io/?EIO=4&transport=polling&t=yhvr0b72&sid=s9biXxuaEpWyi244AAAd HTTP/1.1" 200 214 0.000508
+(16248) accepted ('127.0.0.1', 55093)
+127.0.0.1 - - [06/Apr/2026 16:56:40] "GET /socket.io/?EIO=4&transport=polling&t=yhvr9spf&sid=s9biXxuaEpWyi244AAAd HTTP/1.1" 200 176 0.000000
+2026-04-06 16:56:41,006 - __main__ - INFO - Gesture detected: open_palm
+127.0.0.1 - - [06/Apr/2026 16:56:41] "GET /socket.io/?EIO=4&transport=websocket&sid=s9biXxuaEpWyi244AAAd HTTP/1.1" 200 0 0.073284
+(16248) accepted ('127.0.0.1', 52227)
+127.0.0.1 - - [06/Apr/2026 16:56:41] "GET /socket.io/?EIO=4&transport=polling&t=yhvt5zzj HTTP/1.1" 200 296 0.000000
+(16248) accepted ('127.0.0.1', 54015)
+(16248) accepted ('127.0.0.1', 54016)
+(16248) accepted ('127.0.0.1', 54017)
+127.0.0.1 - - [06/Apr/2026 16:56:41] "POST /socket.io/?EIO=4&transport=polling&t=yhvtc8vo&sid=7EGEUJY857BIu9gwAAAf HTTP/1.1" 200 214 0.000000
+127.0.0.1 - - [06/Apr/2026 16:56:41] "GET /socket.io/?EIO=4&transport=polling&t=yhvtcjek&sid=7EGEUJY857BIu9gwAAAf HTTP/1.1" 200 208 0.000000
+(16248) accepted ('127.0.0.1', 58057)
+(16248) accepted ('127.0.0.1', 58058)
+127.0.0.1 - - [06/Apr/2026 16:56:41] "GET /socket.io/?EIO=4&transport=polling&t=yhvtkvio&sid=7EGEUJY857BIu9gwAAAf HTTP/1.1" 200 176 0.000000
+127.0.0.1 - - [06/Apr/2026 16:56:41] "POST /socket.io/?EIO=4&transport=polling&t=yhvtkox7&sid=7EGEUJY857BIu9gwAAAf HTTP/1.1" 200 214 0.000000
+(16248) accepted ('127.0.0.1', 64973)
+127.0.0.1 - - [06/Apr/2026 16:56:43] "GET /socket.io/?EIO=4&transport=polling&t=yhxd1kwd HTTP/1.1" 200 296 0.000000
+127.0.0.1 - - [06/Apr/2026 16:56:43] "GET /socket.io/?EIO=4&transport=websocket&sid=7EGEUJY857BIu9gwAAAf HTTP/1.1" 200 0 2.862687
+(16248) accepted ('127.0.0.1', 64080)
+(16248) accepted ('127.0.0.1', 64081)
+(16248) accepted ('127.0.0.1', 64082)
+127.0.0.1 - - [06/Apr/2026 16:56:43] "POST /socket.io/?EIO=4&transport=polling&t=yhy12ayd&sid=KgUemCTwu7lP36GnAAAh HTTP/1.1" 200 214 0.000000
+127.0.0.1 - - [06/Apr/2026 16:56:43] "GET /socket.io/?EIO=4&transport=polling&t=yhy12adc&sid=KgUemCTwu7lP36GnAAAh HTTP/1.1" 200 176 0.000000
+2026-04-06 16:56:44,357 - __main__ - INFO - Gesture detected: next
+(16248) accepted ('127.0.0.1', 55269)
+(16248) accepted ('127.0.0.1', 53097)
+127.0.0.1 - - [06/Apr/2026 16:56:44] "GET /socket.io/?EIO=4&transport=polling&t=yhyfaznt HTTP/1.1" 200 296 0.000000
+127.0.0.1 - - [06/Apr/2026 16:56:44] "GET /socket.io/?EIO=4&transport=websocket&sid=KgUemCTwu7lP36GnAAAh HTTP/1.1" 200 0 0.536744
+(16248) accepted ('127.0.0.1', 61116)
+(16248) accepted ('127.0.0.1', 61117)
+(16248) accepted ('127.0.0.1', 61118)
+127.0.0.1 - - [06/Apr/2026 16:56:44] "POST /socket.io/?EIO=4&transport=polling&t=yhyfyzvu&sid=kVVfNUQGImlAIdd_AAAj HTTP/1.1" 200 214 0.001002
+127.0.0.1 - - [06/Apr/2026 16:56:44] "GET /socket.io/?EIO=4&transport=polling&t=yhyfz26k&sid=kVVfNUQGImlAIdd_AAAj HTTP/1.1" 200 208 0.001003
+(16248) accepted ('127.0.0.1', 59071)
+(16248) accepted ('127.0.0.1', 59072)
+127.0.0.1 - - [06/Apr/2026 16:56:44] "POST /socket.io/?EIO=4&transport=polling&t=yhygetka&sid=kVVfNUQGImlAIdd_AAAj HTTP/1.1" 200 214 0.000000
+127.0.0.1 - - [06/Apr/2026 16:56:44] "GET /socket.io/?EIO=4&transport=polling&t=yhyge5j6&sid=kVVfNUQGImlAIdd_AAAj HTTP/1.1" 200 176 0.000000
+(16248) accepted ('127.0.0.1', 64927)
+127.0.0.1 - - [06/Apr/2026 16:56:47] "GET /socket.io/?EIO=4&transport=polling&t=yhzz3q0m HTTP/1.1" 200 296 0.000000
+127.0.0.1 - - [06/Apr/2026 16:56:47] "GET /socket.io/?EIO=4&transport=websocket&sid=kVVfNUQGImlAIdd_AAAj HTTP/1.1" 200 0 2.625865
+(16248) accepted ('127.0.0.1', 49240)
+(16248) accepted ('127.0.0.1', 49241)
+(16248) accepted ('127.0.0.1', 49242)
+127.0.0.1 - - [06/Apr/2026 16:56:47] "GET /socket.io/?EIO=4&transport=polling&t=yi0hbjvg&sid=JHi8yJDFWcF3nqAaAAAl HTTP/1.1" 200 176 0.000000
+127.0.0.1 - - [06/Apr/2026 16:56:47] "POST /socket.io/?EIO=4&transport=polling&t=yi0hboy3&sid=JHi8yJDFWcF3nqAaAAAl HTTP/1.1" 200 214 0.001064
+(16248) accepted ('127.0.0.1', 52809)
+127.0.0.1 - - [06/Apr/2026 16:56:47] "GET /socket.io/?EIO=4&transport=polling&t=yi0hl9io&sid=JHi8yJDFWcF3nqAaAAAl HTTP/1.1" 200 176 0.000000
+2026-04-06 16:56:51,605 - __main__ - INFO - Gesture detected: next
+(16248) accepted ('127.0.0.1', 52896)
+127.0.0.1 - - [06/Apr/2026 16:56:51] "GET /socket.io/?EIO=4&transport=polling&t=yi43nfa6 HTTP/1.1" 200 296 0.001257
+127.0.0.1 - - [06/Apr/2026 16:56:51] "GET /socket.io/?EIO=4&transport=websocket&sid=JHi8yJDFWcF3nqAaAAAl HTTP/1.1" 200 0 4.698259
+(16248) accepted ('127.0.0.1', 57065)
+(16248) accepted ('127.0.0.1', 57066)
+(16248) accepted ('127.0.0.1', 57067)
+127.0.0.1 - - [06/Apr/2026 16:56:51] "POST /socket.io/?EIO=4&transport=polling&t=yi4422p6&sid=JmqQC_mvsT9eyt1VAAAn HTTP/1.1" 200 214 0.001382
+127.0.0.1 - - [06/Apr/2026 16:56:51] "GET /socket.io/?EIO=4&transport=polling&t=yi443miv&sid=JmqQC_mvsT9eyt1VAAAn HTTP/1.1" 200 176 0.000000
+(16248) accepted ('127.0.0.1', 58136)
+127.0.0.1 - - [06/Apr/2026 16:56:54] "GET /socket.io/?EIO=4&transport=polling&t=yi5ndo0u HTTP/1.1" 200 296 0.000000
+127.0.0.1 - - [06/Apr/2026 16:56:54] "GET /socket.io/?EIO=4&transport=websocket&sid=JmqQC_mvsT9eyt1VAAAn HTTP/1.1" 200 0 2.240305
+(16248) accepted ('127.0.0.1', 50391)
+(16248) accepted ('127.0.0.1', 50392)
+(16248) accepted ('127.0.0.1', 50393)
+127.0.0.1 - - [06/Apr/2026 16:56:54] "POST /socket.io/?EIO=4&transport=polling&t=yi5uhcy3&sid=tkqNRKLnqUqw7_0tAAAp HTTP/1.1" 200 214 0.001007
+127.0.0.1 - - [06/Apr/2026 16:56:54] "GET /socket.io/?EIO=4&transport=polling&t=yi5uit4n&sid=tkqNRKLnqUqw7_0tAAAp HTTP/1.1" 200 208 0.001007
+(16248) accepted ('127.0.0.1', 64132)
+(16248) accepted ('127.0.0.1', 64133)
+127.0.0.1 - - [06/Apr/2026 16:56:54] "GET /socket.io/?EIO=4&transport=polling&t=yi5upxjk&sid=tkqNRKLnqUqw7_0tAAAp HTTP/1.1" 200 176 0.000997
+127.0.0.1 - - [06/Apr/2026 16:56:54] "POST /socket.io/?EIO=4&transport=polling&t=yi5up0rr&sid=tkqNRKLnqUqw7_0tAAAp HTTP/1.1" 200 214 0.000000
+Traceback (most recent call last):
+  File "D:\HyperKitchen_Prototype\backend\venv\Lib\site-packages\eventlet\wsgi.py", line 596, in handle_one_response
+    write(b''.join(towrite))
+  File "D:\HyperKitchen_Prototype\backend\venv\Lib\site-packages\eventlet\wsgi.py", line 533, in write
+    wfile.flush()
+  File "C:\myApps\Python\Lib\socket.py", line 724, in write
+    return self._sock.send(b)
+           ^^^^^^^^^^^^^^^^^^
+  File "D:\HyperKitchen_Prototype\backend\venv\Lib\site-packages\eventlet\greenio\base.py", line 401, in send
+    return self._send_loop(self.fd.send, data, flags)
+           ^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^
+  File "D:\HyperKitchen_Prototype\backend\venv\Lib\site-packages\eventlet\greenio\base.py", line 388, in _send_loop
+    return send_method(data, *args)
+           ^^^^^^^^^^^^^^^^^^^^^^^^
+ConnectionAbortedError: [WinError 10053] 你的主机中的软件中止了一个已建立的连接。
+
+127.0.0.1 - - [06/Apr/2026 16:56:58] "GET /videos/9a871ea9-c4bc-49f1-b784-a9ae2f953f4a_processed.mp4 HTTP/1.1" 206 5611968 13.678935
+Traceback (most recent call last):
+  File "D:\HyperKitchen_Prototype\backend\venv\Lib\site-packages\eventlet\hubs\selects.py", line 59, in wait
+    listeners.get(fileno, hub.noop).cb(fileno)
+  File "D:\HyperKitchen_Prototype\backend\venv\Lib\site-packages\eventlet\greenthread.py", line 221, in main
+    result = function(*args, **kwargs)
+             ^^^^^^^^^^^^^^^^^^^^^^^^^
+  File "D:\HyperKitchen_Prototype\backend\venv\Lib\site-packages\eventlet\wsgi.py", line 837, in process_request
+    proto.__init__(conn_state, self)
+  File "D:\HyperKitchen_Prototype\backend\venv\Lib\site-packages\eventlet\wsgi.py", line 352, in __init__
+    self.finish()
+  File "D:\HyperKitchen_Prototype\backend\venv\Lib\site-packages\eventlet\wsgi.py", line 751, in finish
+    BaseHTTPServer.BaseHTTPRequestHandler.finish(self)
+  File "C:\myApps\Python\Lib\socketserver.py", line 819, in finish
+    self.wfile.close()
+  File "C:\myApps\Python\Lib\socket.py", line 724, in write
+    return self._sock.send(b)
+           ^^^^^^^^^^^^^^^^^^
+  File "D:\HyperKitchen_Prototype\backend\venv\Lib\site-packages\eventlet\greenio\base.py", line 401, in send
+    return self._send_loop(self.fd.send, data, flags)
+           ^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^
+  File "D:\HyperKitchen_Prototype\backend\venv\Lib\site-packages\eventlet\greenio\base.py", line 388, in _send_loop
+    return send_method(data, *args)
+           ^^^^^^^^^^^^^^^^^^^^^^^^
+ConnectionAbortedError: [WinError 10053] 你的主机中的软件中止了一个已建立的连接。
+Removing descriptor: 2592
+2026-04-06 16:57:02,813 - __main__ - INFO - Gesture detected: next
+(16248) accepted ('127.0.0.1', 64438)
+127.0.0.1 - - [06/Apr/2026 16:57:03] "GET /socket.io/?EIO=4&transport=polling&t=yicthv3t HTTP/1.1" 200 296 0.000000
+127.0.0.1 - - [06/Apr/2026 16:57:03] "GET /socket.io/?EIO=4&transport=websocket&sid=tkqNRKLnqUqw7_0tAAAp HTTP/1.1" 200 0 9.049725
+(16248) accepted ('127.0.0.1', 52993)
+(16248) accepted ('127.0.0.1', 52994)
+(16248) accepted ('127.0.0.1', 52995)
+127.0.0.1 - - [06/Apr/2026 16:57:03] "POST /socket.io/?EIO=4&transport=polling&t=yicu3l28&sid=L1U2HK9Mn_SRTvu-AAAr HTTP/1.1" 200 214 0.000000
+127.0.0.1 - - [06/Apr/2026 16:57:03] "GET /socket.io/?EIO=4&transport=polling&t=yicu34wz&sid=L1U2HK9Mn_SRTvu-AAAr HTTP/1.1" 200 208 0.000870
+2026-04-06 16:57:03,811 - __main__ - INFO - Gesture detected: next
+127.0.0.1 - - [06/Apr/2026 16:57:03] "GET /socket.io/?EIO=4&transport=websocket&sid=L1U2HK9Mn_SRTvu-AAAr HTTP/1.1" 200 0 0.720739
+(16248) accepted ('127.0.0.1', 55550)
+(16248) accepted ('127.0.0.1', 55551)
+127.0.0.1 - - [06/Apr/2026 16:57:03] "GET /socket.io/?EIO=4&transport=polling&t=yideapbr HTTP/1.1" 200 296 0.000000
+Traceback (most recent call last):
+  File "D:\HyperKitchen_Prototype\backend\venv\Lib\site-packages\eventlet\wsgi.py", line 596, in handle_one_response
+    write(b''.join(towrite))
+  File "D:\HyperKitchen_Prototype\backend\venv\Lib\site-packages\eventlet\wsgi.py", line 533, in write
+    wfile.flush()
+  File "C:\myApps\Python\Lib\socket.py", line 724, in write
+    return self._sock.send(b)
+           ^^^^^^^^^^^^^^^^^^
+  File "D:\HyperKitchen_Prototype\backend\venv\Lib\site-packages\eventlet\greenio\base.py", line 401, in send
+    return self._send_loop(self.fd.send, data, flags)
+           ^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^
+  File "D:\HyperKitchen_Prototype\backend\venv\Lib\site-packages\eventlet\greenio\base.py", line 388, in _send_loop
+    return send_method(data, *args)
+           ^^^^^^^^^^^^^^^^^^^^^^^^
+ConnectionResetError: [WinError 10054] 远程主机强迫关闭了一个现有的连接。
+
+127.0.0.1 - - [06/Apr/2026 16:57:03] "GET /videos/9a871ea9-c4bc-49f1-b784-a9ae2f953f4a_processed.mp4 HTTP/1.1" 206 287166 0.003119
+(16248) accepted ('127.0.0.1', 64053)
+(16248) accepted ('127.0.0.1', 55902)
+(16248) accepted ('127.0.0.1', 55903)
+(16248) accepted ('127.0.0.1', 55904)
+127.0.0.1 - - [06/Apr/2026 16:57:03] "POST /socket.io/?EIO=4&transport=polling&t=yidemg6z&sid=bB9Lp_jDTRLmi_PtAAAt HTTP/1.1" 200 214 0.000000
+127.0.0.1 - - [06/Apr/2026 16:57:03] "GET /socket.io/?EIO=4&transport=polling&t=yiden4e1&sid=bB9Lp_jDTRLmi_PtAAAt HTTP/1.1" 200 176 0.001431
+(16248) accepted ('127.0.0.1', 56005)
+127.0.0.1 - - [06/Apr/2026 16:57:07] "GET /socket.io/?EIO=4&transport=polling&t=yiey6i00 HTTP/1.1" 200 296 0.000000
+127.0.0.1 - - [06/Apr/2026 16:57:07] "GET /socket.io/?EIO=4&transport=websocket&sid=bB9Lp_jDTRLmi_PtAAAt HTTP/1.1" 200 0 3.215477
+(16248) accepted ('127.0.0.1', 53963)
+(16248) accepted ('127.0.0.1', 53964)
+(16248) accepted ('127.0.0.1', 53965)
+127.0.0.1 - - [06/Apr/2026 16:57:07] "POST /socket.io/?EIO=4&transport=polling&t=yifwdg8w&sid=d9MgG5_yNz-2xpPkAAAv HTTP/1.1" 200 214 0.000000
+127.0.0.1 - - [06/Apr/2026 16:57:07] "GET /socket.io/?EIO=4&transport=polling&t=yifwewgh&sid=d9MgG5_yNz-2xpPkAAAv HTTP/1.1" 200 208 0.002034
+2026-04-06 16:57:07,180 - __main__ - INFO - Gesture detected: next
+2026-04-06 16:57:08,190 - __main__ - INFO - Gesture detected: prev
+127.0.0.1 - - [06/Apr/2026 16:57:08] "GET /socket.io/?EIO=4&transport=websocket&sid=d9MgG5_yNz-2xpPkAAAv HTTP/1.1" 200 0 1.131906
+(16248) accepted ('127.0.0.1', 59539)
+127.0.0.1 - - [06/Apr/2026 16:57:08] "GET /socket.io/?EIO=4&transport=polling&t=yigryd1o HTTP/1.1" 200 296 0.000000
+(16248) accepted ('127.0.0.1', 62350)
+(16248) accepted ('127.0.0.1', 62351)
+(16248) accepted ('127.0.0.1', 62352)
+127.0.0.1 - - [06/Apr/2026 16:57:08] "GET /socket.io/?EIO=4&transport=polling&t=yigs5wwn&sid=X07jH-5APDioqh_PAAAx HTTP/1.1" 200 176 0.000000
+127.0.0.1 - - [06/Apr/2026 16:57:08] "POST /socket.io/?EIO=4&transport=polling&t=yigs5sqv&sid=X07jH-5APDioqh_PAAAx HTTP/1.1" 200 214 0.001007
+(16248) accepted ('127.0.0.1', 63793)
+127.0.0.1 - - [06/Apr/2026 16:57:08] "GET /socket.io/?EIO=4&transport=polling&t=yigscy2m&sid=X07jH-5APDioqh_PAAAx HTTP/1.1" 200 176 0.000000
+(16248) accepted ('127.0.0.1', 56825)
+127.0.0.1 - - [06/Apr/2026 16:57:10] "GET /socket.io/?EIO=4&transport=polling&t=yiibpzw8 HTTP/1.1" 200 296 0.001009
+127.0.0.1 - - [06/Apr/2026 16:57:10] "GET /socket.io/?EIO=4&transport=websocket&sid=X07jH-5APDioqh_PAAAx HTTP/1.1" 200 0 2.561765
+(16248) accepted ('127.0.0.1', 65128)
+(16248) accepted ('127.0.0.1', 65129)
+(16248) accepted ('127.0.0.1', 65130)
+127.0.0.1 - - [06/Apr/2026 16:57:10] "GET /socket.io/?EIO=4&transport=polling&t=yiirk456&sid=Y5VIO-3gui-4E2B0AAAz HTTP/1.1" 200 176 0.000000
+127.0.0.1 - - [06/Apr/2026 16:57:10] "POST /socket.io/?EIO=4&transport=polling&t=yiirk85u&sid=Y5VIO-3gui-4E2B0AAAz HTTP/1.1" 200 214 0.001009
+(16248) accepted ('127.0.0.1', 53746)
+127.0.0.1 - - [06/Apr/2026 16:57:10] "GET /socket.io/?EIO=4&transport=polling&t=yiirrg43&sid=Y5VIO-3gui-4E2B0AAAz HTTP/1.1" 200 176 0.001039
+2026-04-06 16:57:10,859 - __main__ - INFO - Gesture detected: prev
+127.0.0.1 - - [06/Apr/2026 16:57:10] "GET /socket.io/?EIO=4&transport=websocket&sid=Y5VIO-3gui-4E2B0AAAz HTTP/1.1" 200 0 0.118953
+(16248) accepted ('127.0.0.1', 56882)
+127.0.0.1 - - [06/Apr/2026 16:57:10] "GET /socket.io/?EIO=4&transport=polling&t=yiiuznnf HTTP/1.1" 200 296 0.000000
+(16248) accepted ('127.0.0.1', 65213)
+(16248) accepted ('127.0.0.1', 65214)
+(16248) accepted ('127.0.0.1', 65215)
+127.0.0.1 - - [06/Apr/2026 16:57:10] "POST /socket.io/?EIO=4&transport=polling&t=yiivbyrj&sid=LNgfb05i19Rkh3q2AAA1 HTTP/1.1" 200 214 0.000000
+127.0.0.1 - - [06/Apr/2026 16:57:10] "GET /socket.io/?EIO=4&transport=polling&t=yiivctbe&sid=LNgfb05i19Rkh3q2AAA1 HTTP/1.1" 200 176 0.000000
+2026-04-06 16:57:13,493 - __main__ - INFO - Gesture detected: open_palm
+(16248) accepted ('127.0.0.1', 62388)
+127.0.0.1 - - [06/Apr/2026 16:57:13] "GET /socket.io/?EIO=4&transport=polling&t=yikevzyu HTTP/1.1" 200 296 0.000000
+127.0.0.1 - - [06/Apr/2026 16:57:13] "GET /socket.io/?EIO=4&transport=websocket&sid=LNgfb05i19Rkh3q2AAA1 HTTP/1.1" 200 0 2.592664
+(16248) accepted ('127.0.0.1', 51964)
+(16248) accepted ('127.0.0.1', 51965)
+(16248) accepted ('127.0.0.1', 51966)
+127.0.0.1 - - [06/Apr/2026 16:57:13] "POST /socket.io/?EIO=4&transport=polling&t=yikvjeyl&sid=2tZs3nFkQJwXBV2mAAA3 HTTP/1.1" 200 214 0.000000
+127.0.0.1 - - [06/Apr/2026 16:57:13] "GET /socket.io/?EIO=4&transport=polling&t=yikvjjr2&sid=2tZs3nFkQJwXBV2mAAA3 HTTP/1.1" 200 176 0.000000
+2026-04-06 16:57:15,890 - __main__ - INFO - Gesture detected: open_palm
+(16248) accepted ('127.0.0.1', 61469)
+127.0.0.1 - - [06/Apr/2026 16:57:15] "GET /socket.io/?EIO=4&transport=polling&t=yimqploh HTTP/1.1" 200 296 0.001498
+127.0.0.1 - - [06/Apr/2026 16:57:15] "GET /socket.io/?EIO=4&transport=websocket&sid=2tZs3nFkQJwXBV2mAAA3 HTTP/1.1" 200 0 2.456490
+(16248) accepted ('127.0.0.1', 60338)
+(16248) accepted ('127.0.0.1', 60339)
+(16248) accepted ('127.0.0.1', 60340)
+127.0.0.1 - - [06/Apr/2026 16:57:15] "POST /socket.io/?EIO=4&transport=polling&t=yimrzztb&sid=NkvWmnm0nj8EfFliAAA5 HTTP/1.1" 200 214 0.000000
+127.0.0.1 - - [06/Apr/2026 16:57:15] "GET /socket.io/?EIO=4&transport=polling&t=yims0hde&sid=NkvWmnm0nj8EfFliAAA5 HTTP/1.1" 200 208 0.000000
+(16248) accepted ('127.0.0.1', 60350)
+(16248) accepted ('127.0.0.1', 60351)
+127.0.0.1 - - [06/Apr/2026 16:57:15] "POST /socket.io/?EIO=4&transport=polling&t=yims8o7x&sid=NkvWmnm0nj8EfFliAAA5 HTTP/1.1" 200 214 0.000000
+127.0.0.1 - - [06/Apr/2026 16:57:15] "GET /socket.io/?EIO=4&transport=polling&t=yims81lc&sid=NkvWmnm0nj8EfFliAAA5 HTTP/1.1" 200 176 0.000000
+(16248) accepted ('127.0.0.1', 64792)
+127.0.0.1 - - [06/Apr/2026 16:57:18] "GET /socket.io/?EIO=4&transport=polling&t=yioafmtj HTTP/1.1" 200 296 0.000000
+127.0.0.1 - - [06/Apr/2026 16:57:18] "GET /socket.io/?EIO=4&transport=websocket&sid=NkvWmnm0nj8EfFliAAA5 HTTP/1.1" 200 0 2.529210
+(16248) accepted ('127.0.0.1', 56295)
+(16248) accepted ('127.0.0.1', 56296)
+(16248) accepted ('127.0.0.1', 56297)
+127.0.0.1 - - [06/Apr/2026 16:57:18] "POST /socket.io/?EIO=4&transport=polling&t=yioqhpyn&sid=PayqFwGFBM8U5UfDAAA7 HTTP/1.1" 200 214 0.001005
+127.0.0.1 - - [06/Apr/2026 16:57:18] "GET /socket.io/?EIO=4&transport=polling&t=yioqizvw&sid=PayqFwGFBM8U5UfDAAA7 HTTP/1.1" 200 176 0.001184
+(16248) accepted ('127.0.0.1', 61438)
+127.0.0.1 - - [06/Apr/2026 16:57:18] "GET /socket.io/?EIO=4&transport=polling&t=yioqr9kf&sid=PayqFwGFBM8U5UfDAAA7 HTTP/1.1" 200 176 0.000000
+2026-04-06 16:57:18,588 - __main__ - INFO - Gesture detected: prev
+127.0.0.1 - - [06/Apr/2026 16:57:18] "GET /socket.io/?EIO=4&transport=websocket&sid=PayqFwGFBM8U5UfDAAA7 HTTP/1.1" 200 0 0.106256
+(16248) accepted ('127.0.0.1', 62211)
+127.0.0.1 - - [06/Apr/2026 16:57:18] "GET /socket.io/?EIO=4&transport=polling&t=yiotlsmg HTTP/1.1" 200 296 0.000000
+(16248) accepted ('127.0.0.1', 63028)
+(16248) accepted ('127.0.0.1', 63029)
+(16248) accepted ('127.0.0.1', 63030)
+127.0.0.1 - - [06/Apr/2026 16:57:18] "POST /socket.io/?EIO=4&transport=polling&t=yiotrf0u&sid=LlzU9eRNXfPj3zf8AAA9 HTTP/1.1" 200 214 0.001364
+127.0.0.1 - - [06/Apr/2026 16:57:18] "GET /socket.io/?EIO=4&transport=polling&t=yiots7ih&sid=LlzU9eRNXfPj3zf8AAA9 HTTP/1.1" 200 208 0.000000
+(16248) accepted ('127.0.0.1', 59255)
+(16248) accepted ('127.0.0.1', 59256)
+127.0.0.1 - - [06/Apr/2026 16:57:18] "GET /socket.io/?EIO=4&transport=polling&t=yiou11qm&sid=LlzU9eRNXfPj3zf8AAA9 HTTP/1.1" 200 176 0.000000
+127.0.0.1 - - [06/Apr/2026 16:57:18] "POST /socket.io/?EIO=4&transport=polling&t=yiou1d9u&sid=LlzU9eRNXfPj3zf8AAA9 HTTP/1.1" 200 214 0.000000
+(16248) accepted ('127.0.0.1', 63047)
+127.0.0.1 - - [06/Apr/2026 16:57:21] "GET /socket.io/?EIO=4&transport=polling&t=yiqdcg72 HTTP/1.1" 200 296 0.000000
+127.0.0.1 - - [06/Apr/2026 16:57:21] "GET /socket.io/?EIO=4&transport=websocket&sid=LlzU9eRNXfPj3zf8AAA9 HTTP/1.1" 200 0 2.427394
+(16248) accepted ('127.0.0.1', 57647)
+(16248) accepted ('127.0.0.1', 57648)
+(16248) accepted ('127.0.0.1', 57650)
+127.0.0.1 - - [06/Apr/2026 16:57:21] "POST /socket.io/?EIO=4&transport=polling&t=yiqpffd8&sid=tjV04xePu3Cn4tJ2AAA_ HTTP/1.1" 200 214 0.000000
+127.0.0.1 - - [06/Apr/2026 16:57:21] "GET /socket.io/?EIO=4&transport=polling&t=yiqpgmyg&sid=tjV04xePu3Cn4tJ2AAA_ HTTP/1.1" 200 176 0.000000
+2026-04-06 16:57:22,776 - __main__ - INFO - Gesture detected: open_palm
+(16248) accepted ('127.0.0.1', 63551)
+127.0.0.1 - - [06/Apr/2026 16:57:22] "GET /socket.io/?EIO=4&transport=polling&t=yis2omen HTTP/1.1" 200 296 0.001004
+127.0.0.1 - - [06/Apr/2026 16:57:22] "GET /socket.io/?EIO=4&transport=websocket&sid=tjV04xePu3Cn4tJ2AAA_ HTTP/1.1" 200 0 1.791512
+(16248) accepted ('127.0.0.1', 58984)
+(16248) accepted ('127.0.0.1', 58985)
+(16248) accepted ('127.0.0.1', 58986)
+127.0.0.1 - - [06/Apr/2026 16:57:22] "POST /socket.io/?EIO=4&transport=polling&t=yis3eds4&sid=idBXoJQ3dNTH0fw8AABB HTTP/1.1" 200 214 0.001194
+127.0.0.1 - - [06/Apr/2026 16:57:22] "GET /socket.io/?EIO=4&transport=polling&t=yis3fu5j&sid=idBXoJQ3dNTH0fw8AABB HTTP/1.1" 200 176 0.001376
+(16248) accepted ('127.0.0.1', 55421)
+127.0.0.1 - - [06/Apr/2026 16:57:25] "GET /socket.io/?EIO=4&transport=polling&t=yitmfgln HTTP/1.1" 200 296 0.000000
+127.0.0.1 - - [06/Apr/2026 16:57:25] "GET /socket.io/?EIO=4&transport=websocket&sid=idBXoJQ3dNTH0fw8AABB HTTP/1.1" 200 0 2.517749
+(16248) accepted ('127.0.0.1', 56307)
+(16248) accepted ('127.0.0.1', 56308)
+127.0.0.1 - - [06/Apr/2026 16:57:25] "POST /socket.io/?EIO=4&transport=polling&t=yiu1j2py&sid=GOsOkJYBarMhQPTYAABD HTTP/1.1" 200 214 0.000000
+(16248) accepted ('127.0.0.1', 56309)
+127.0.0.1 - - [06/Apr/2026 16:57:25] "GET /socket.io/?EIO=4&transport=polling&t=yiu1jzbb&sid=GOsOkJYBarMhQPTYAABD HTTP/1.1" 200 208 0.000000
+(16248) accepted ('127.0.0.1', 61821)
+(16248) accepted ('127.0.0.1', 61822)
+127.0.0.1 - - [06/Apr/2026 16:57:25] "POST /socket.io/?EIO=4&transport=polling&t=yiu1qr53&sid=GOsOkJYBarMhQPTYAABD HTTP/1.1" 200 214 0.000000
+127.0.0.1 - - [06/Apr/2026 16:57:25] "GET /socket.io/?EIO=4&transport=polling&t=yiu1ql8p&sid=GOsOkJYBarMhQPTYAABD HTTP/1.1" 200 176 0.000000
+2026-04-06 16:57:26,825 - __main__ - INFO - Gesture detected: open_palm
+(16248) accepted ('127.0.0.1', 64141)
+127.0.0.1 - - [06/Apr/2026 16:57:26] "GET /socket.io/?EIO=4&transport=polling&t=yiv6xucf HTTP/1.1" 200 296 0.000000
+127.0.0.1 - - [06/Apr/2026 16:57:26] "GET /socket.io/?EIO=4&transport=websocket&sid=GOsOkJYBarMhQPTYAABD HTTP/1.1" 200 0 1.490259
+(16248) accepted ('127.0.0.1', 56832)
+(16248) accepted ('127.0.0.1', 56833)
+(16248) accepted ('127.0.0.1', 56834)
+127.0.0.1 - - [06/Apr/2026 16:57:26] "POST /socket.io/?EIO=4&transport=polling&t=yiv75r02&sid=-YHO2vRQcepSYdk0AABF HTTP/1.1" 200 214 0.000000
+127.0.0.1 - - [06/Apr/2026 16:57:26] "GET /socket.io/?EIO=4&transport=polling&t=yiv76h0r&sid=-YHO2vRQcepSYdk0AABF HTTP/1.1" 200 176 0.000000
+(16248) accepted ('127.0.0.1', 61035)
+127.0.0.1 - - [06/Apr/2026 16:57:29] "GET /socket.io/?EIO=4&transport=polling&t=yiwqsnvu HTTP/1.1" 200 296 0.000000
+(16248) accepted ('127.0.0.1', 62674)
+(16248) accepted ('127.0.0.1', 62675)
+(16248) accepted ('127.0.0.1', 62676)
+127.0.0.1 - - [06/Apr/2026 16:57:29] "GET /socket.io/?EIO=4&transport=websocket&sid=-YHO2vRQcepSYdk0AABF HTTP/1.1" 200 0 2.533452
+127.0.0.1 - - [06/Apr/2026 16:57:29] "POST /socket.io/?EIO=4&transport=polling&t=yix1lr21&sid=phw1Q0h0ES1DdnEPAABH HTTP/1.1" 200 214 0.000000
+127.0.0.1 - - [06/Apr/2026 16:57:29] "GET /socket.io/?EIO=4&transport=polling&t=yix1mobz&sid=phw1Q0h0ES1DdnEPAABH HTTP/1.1" 200 176 0.000000
+(16248) accepted ('127.0.0.1', 62902)
+127.0.0.1 - - [06/Apr/2026 16:57:29] "GET /socket.io/?EIO=4&transport=polling&t=yix7an2x&sid=phw1Q0h0ES1DdnEPAABH HTTP/1.1" 200 176 0.000000
+Traceback (most recent call last):
+  File "D:\HyperKitchen_Prototype\backend\venv\Lib\site-packages\eventlet\wsgi.py", line 596, in handle_one_response
+    write(b''.join(towrite))
+  File "D:\HyperKitchen_Prototype\backend\venv\Lib\site-packages\eventlet\wsgi.py", line 533, in write
+    wfile.flush()
+  File "C:\myApps\Python\Lib\socket.py", line 724, in write
+    return self._sock.send(b)
+           ^^^^^^^^^^^^^^^^^^
+  File "D:\HyperKitchen_Prototype\backend\venv\Lib\site-packages\eventlet\greenio\base.py", line 401, in send
+    return self._send_loop(self.fd.send, data, flags)
+           ^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^
+  File "D:\HyperKitchen_Prototype\backend\venv\Lib\site-packages\eventlet\greenio\base.py", line 388, in _send_loop
+    return send_method(data, *args)
+           ^^^^^^^^^^^^^^^^^^^^^^^^
+ConnectionResetError: [WinError 10054] 远程主机强迫关闭了一个现有的连接。
+
+127.0.0.1 - - [06/Apr/2026 16:57:33] "GET /videos/9a871ea9-c4bc-49f1-b784-a9ae2f953f4a_processed.mp4 HTTP/1.1" 206 4604351 29.743676
+2026-04-06 16:57:37,579 - __main__ - INFO - Gesture detected: open_palm
+(16248) accepted ('127.0.0.1', 63844)
+127.0.0.1 - - [06/Apr/2026 16:57:38] "GET /socket.io/?EIO=4&transport=polling&t=yj3mcdqk HTTP/1.1" 200 296 0.001004
+127.0.0.1 - - [06/Apr/2026 16:57:38] "GET /socket.io/?EIO=4&transport=websocket&sid=phw1Q0h0ES1DdnEPAABH HTTP/1.1" 200 0 8.541050
+(16248) accepted ('127.0.0.1', 56885)
+(16248) accepted ('127.0.0.1', 56886)
+(16248) accepted ('127.0.0.1', 56887)
+127.0.0.1 - - [06/Apr/2026 16:57:38] "POST /socket.io/?EIO=4&transport=polling&t=yj3si2ox&sid=M0VqTs-HuHcXqSkEAABJ HTTP/1.1" 200 214 0.000000
+127.0.0.1 - - [06/Apr/2026 16:57:38] "GET /socket.io/?EIO=4&transport=polling&t=yj3siijo&sid=M0VqTs-HuHcXqSkEAABJ HTTP/1.1" 200 208 0.000000
+(16248) accepted ('127.0.0.1', 54204)
+(16248) accepted ('127.0.0.1', 54205)
+127.0.0.1 - - [06/Apr/2026 16:57:38] "POST /socket.io/?EIO=4&transport=polling&t=yj3sr700&sid=M0VqTs-HuHcXqSkEAABJ HTTP/1.1" 200 214 0.000000
+127.0.0.1 - - [06/Apr/2026 16:57:38] "GET /socket.io/?EIO=4&transport=polling&t=yj3srmyd&sid=M0VqTs-HuHcXqSkEAABJ HTTP/1.1" 200 176 0.001165
+2026-04-06 16:57:38,585 - __main__ - INFO - Gesture detected: open_palm
+127.0.0.1 - - [06/Apr/2026 16:57:38] "GET /socket.io/?EIO=4&transport=websocket&sid=M0VqTs-HuHcXqSkEAABJ HTTP/1.1" 200 0 0.556491
+(16248) accepted ('127.0.0.1', 65069)
+127.0.0.1 - - [06/Apr/2026 16:57:38] "GET /socket.io/?EIO=4&transport=polling&t=yj484a9p HTTP/1.1" 200 296 0.000000
+(16248) accepted ('127.0.0.1', 62171)
+127.0.0.1 - - [06/Apr/2026 16:57:38] "POST /socket.io/?EIO=4&transport=polling&t=yj489vu0&sid=NSb1WQJM6sBeqQJWAABL HTTP/1.1" 200 214 0.000510
+(16248) accepted ('127.0.0.1', 62172)
+(16248) accepted ('127.0.0.1', 62173)
+127.0.0.1 - - [06/Apr/2026 16:57:38] "GET /socket.io/?EIO=4&transport=polling&t=yj48aanl&sid=NSb1WQJM6sBeqQJWAABL HTTP/1.1" 200 208 0.000000
+(16248) accepted ('127.0.0.1', 51387)
+(16248) accepted ('127.0.0.1', 51388)
+127.0.0.1 - - [06/Apr/2026 16:57:38] "POST /socket.io/?EIO=4&transport=polling&t=yj48gq41&sid=NSb1WQJM6sBeqQJWAABL HTTP/1.1" 200 214 0.001021
+127.0.0.1 - - [06/Apr/2026 16:57:38] "GET /socket.io/?EIO=4&transport=polling&t=yj48g79r&sid=NSb1WQJM6sBeqQJWAABL HTTP/1.1" 200 176 0.000000
+(16248) accepted ('127.0.0.1', 58898)
+127.0.0.1 - - [06/Apr/2026 16:57:41] "GET /socket.io/?EIO=4&transport=polling&t=yj5rvi27 HTTP/1.1" 200 296 0.000000
+127.0.0.1 - - [06/Apr/2026 16:57:41] "GET /socket.io/?EIO=4&transport=websocket&sid=NSb1WQJM6sBeqQJWAABL HTTP/1.1" 200 0 2.500268
+(16248) accepted ('127.0.0.1', 52223)
+(16248) accepted ('127.0.0.1', 52224)
+(16248) accepted ('127.0.0.1', 52225)
+127.0.0.1 - - [06/Apr/2026 16:57:41] "GET /socket.io/?EIO=4&transport=polling&t=yj65xtnz&sid=--POiY3pLcCtRlHDAABN HTTP/1.1" 200 176 0.000000
+127.0.0.1 - - [06/Apr/2026 16:57:41] "POST /socket.io/?EIO=4&transport=polling&t=yj65wb9a&sid=--POiY3pLcCtRlHDAABN HTTP/1.1" 200 214 0.001015
+(16248) accepted ('127.0.0.1', 56492)
+127.0.0.1 - - [06/Apr/2026 16:57:41] "GET /socket.io/?EIO=4&transport=polling&t=yj662pma&sid=--POiY3pLcCtRlHDAABN HTTP/1.1" 200 176 0.000000
+2026-04-06 16:57:41,620 - __main__ - INFO - Gesture detected: prev
+(16248) accepted ('127.0.0.1', 53765)
+127.0.0.1 - - [06/Apr/2026 16:57:41] "GET /socket.io/?EIO=4&transport=polling&t=yj6lqw4v HTTP/1.1" 200 296 0.000997
+127.0.0.1 - - [06/Apr/2026 16:57:41] "GET /socket.io/?EIO=4&transport=websocket&sid=--POiY3pLcCtRlHDAABN HTTP/1.1" 200 0 0.583079
+(16248) accepted ('127.0.0.1', 57768)
+(16248) accepted ('127.0.0.1', 57769)
+(16248) accepted ('127.0.0.1', 57770)
+127.0.0.1 - - [06/Apr/2026 16:57:41] "POST /socket.io/?EIO=4&transport=polling&t=yj6m9ddg&sid=Ntpe0lJ_JYEcNJoyAABP HTTP/1.1" 200 214 0.000000
+127.0.0.1 - - [06/Apr/2026 16:57:41] "GET /socket.io/?EIO=4&transport=polling&t=yj6m9oem&sid=Ntpe0lJ_JYEcNJoyAABP HTTP/1.1" 200 176 0.000000
+(16248) accepted ('127.0.0.1', 54252)
+127.0.0.1 - - [06/Apr/2026 16:57:41] "GET /socket.io/?EIO=4&transport=polling&t=yj6mjzm3&sid=Ntpe0lJ_JYEcNJoyAABP HTTP/1.1" 200 176 0.000000
+(16248) accepted ('127.0.0.1', 58887)
+127.0.0.1 - - [06/Apr/2026 16:57:44] "GET /socket.io/?EIO=4&transport=polling&t=yj85hckm HTTP/1.1" 200 296 0.000000
+127.0.0.1 - - [06/Apr/2026 16:57:44] "GET /socket.io/?EIO=4&transport=websocket&sid=Ntpe0lJ_JYEcNJoyAABP HTTP/1.1" 200 0 2.597920
+(16248) accepted ('127.0.0.1', 64699)
+(16248) accepted ('127.0.0.1', 64700)
+(16248) accepted ('127.0.0.1', 64701)
+127.0.0.1 - - [06/Apr/2026 16:57:44] "POST /socket.io/?EIO=4&transport=polling&t=yj8mlmhu&sid=qNYOHw11r1QtDLTqAABR HTTP/1.1" 200 214 0.001009
+127.0.0.1 - - [06/Apr/2026 16:57:44] "GET /socket.io/?EIO=4&transport=polling&t=yj8mmb8j&sid=qNYOHw11r1QtDLTqAABR HTTP/1.1" 200 176 0.000000
+2026-04-06 16:57:44,497 - __main__ - INFO - Gesture detected: prev
+127.0.0.1 - - [06/Apr/2026 16:57:44] "GET /socket.io/?EIO=4&transport=websocket&sid=qNYOHw11r1QtDLTqAABR HTTP/1.1" 200 0 0.259128
+(16248) accepted ('127.0.0.1', 58928)
+127.0.0.1 - - [06/Apr/2026 16:57:44] "GET /socket.io/?EIO=4&transport=polling&t=yj8tvrh5 HTTP/1.1" 200 296 0.000000
+(16248) accepted ('127.0.0.1', 52267)
+(16248) accepted ('127.0.0.1', 52268)
+(16248) accepted ('127.0.0.1', 52269)
+127.0.0.1 - - [06/Apr/2026 16:57:44] "POST /socket.io/?EIO=4&transport=polling&t=yj8u86u8&sid=r3ifeJWop6vlyt4mAABT HTTP/1.1" 200 214 0.000000
+127.0.0.1 - - [06/Apr/2026 16:57:44] "GET /socket.io/?EIO=4&transport=polling&t=yj8u8hz5&sid=r3ifeJWop6vlyt4mAABT HTTP/1.1" 200 208 0.002018
+(16248) accepted ('127.0.0.1', 50540)
+127.0.0.1 - - [06/Apr/2026 16:57:47] "GET /socket.io/?EIO=4&transport=polling&t=yjadses6 HTTP/1.1" 200 296 0.001009
+127.0.0.1 - - [06/Apr/2026 16:57:47] "GET /socket.io/?EIO=4&transport=websocket&sid=r3ifeJWop6vlyt4mAABT HTTP/1.1" 200 0 2.793216
+(16248) accepted ('127.0.0.1', 49310)
+127.0.0.1 - - [06/Apr/2026 16:57:47] "POST /socket.io/?EIO=4&transport=polling&t=yjb03o6e&sid=n0X8jipavewGxj2KAABV HTTP/1.1" 200 214 0.001006
+(16248) accepted ('127.0.0.1', 49311)
+(16248) accepted ('127.0.0.1', 49312)
+127.0.0.1 - - [06/Apr/2026 16:57:47] "GET /socket.io/?EIO=4&transport=polling&t=yjb03drd&sid=n0X8jipavewGxj2KAABV HTTP/1.1" 200 208 0.000000
+(16248) accepted ('127.0.0.1', 61548)
+(16248) accepted ('127.0.0.1', 61549)
+127.0.0.1 - - [06/Apr/2026 16:57:47] "POST /socket.io/?EIO=4&transport=polling&t=yjb0clsw&sid=n0X8jipavewGxj2KAABV HTTP/1.1" 200 214 0.001078
+127.0.0.1 - - [06/Apr/2026 16:57:47] "GET /socket.io/?EIO=4&transport=polling&t=yjb0bpac&sid=n0X8jipavewGxj2KAABV HTTP/1.1" 200 176 0.000000
+2026-04-06 16:58:05,243 - __main__ - INFO - Gesture detected: open_palm
+(16248) accepted ('127.0.0.1', 64016)
+127.0.0.1 - - [06/Apr/2026 16:58:06] "GET /socket.io/?EIO=4&transport=polling&t=yjp6zm7w HTTP/1.1" 200 296 0.000000
+127.0.0.1 - - [06/Apr/2026 16:58:06] "GET /socket.io/?EIO=4&transport=websocket&sid=n0X8jipavewGxj2KAABV HTTP/1.1" 200 0 18.682028
+(16248) accepted ('127.0.0.1', 61598)
+(16248) accepted ('127.0.0.1', 61599)
+(16248) accepted ('127.0.0.1', 61600)
+127.0.0.1 - - [06/Apr/2026 16:58:06] "POST /socket.io/?EIO=4&transport=polling&t=yjpf9nk8&sid=EgM8k1t7O9byMY0AAABX HTTP/1.1" 200 214 0.000000
+127.0.0.1 - - [06/Apr/2026 16:58:06] "GET /socket.io/?EIO=4&transport=polling&t=yjpfa2qy&sid=EgM8k1t7O9byMY0AAABX HTTP/1.1" 200 176 0.000000
+(16248) accepted ('127.0.0.1', 60344)
+127.0.0.1 - - [06/Apr/2026 16:58:06] "GET /socket.io/?EIO=4&transport=polling&t=yjpfqx83&sid=EgM8k1t7O9byMY0AAABX HTTP/1.1" 200 176 0.000000
+2026-04-06 16:58:06,240 - __main__ - INFO - Gesture detected: open_palm
+127.0.0.1 - - [06/Apr/2026 16:58:06] "GET /socket.io/?EIO=4&transport=websocket&sid=EgM8k1t7O9byMY0AAABX HTTP/1.1" 200 0 0.178662
+(16248) accepted ('127.0.0.1', 64685)
+127.0.0.1 - - [06/Apr/2026 16:58:06] "GET /socket.io/?EIO=4&transport=polling&t=yjpkdbzc HTTP/1.1" 200 296 0.001105
+(16248) accepted ('127.0.0.1', 64481)
+127.0.0.1 - - [06/Apr/2026 16:58:06] "POST /socket.io/?EIO=4&transport=polling&t=yjpkllwu&sid=yawoZZ0o9QsbLbugAABZ HTTP/1.1" 200 214 0.000000
+(16248) accepted ('127.0.0.1', 64482)
+(16248) accepted ('127.0.0.1', 64483)
+127.0.0.1 - - [06/Apr/2026 16:58:06] "GET /socket.io/?EIO=4&transport=polling&t=yjpkl6ay&sid=yawoZZ0o9QsbLbugAABZ HTTP/1.1" 200 208 0.000000
+(16248) accepted ('127.0.0.1', 49672)
+(16248) accepted ('127.0.0.1', 49688)
+127.0.0.1 - - [06/Apr/2026 16:58:06] "GET /socket.io/?EIO=4&transport=polling&t=yjpkuxjq&sid=yawoZZ0o9QsbLbugAABZ HTTP/1.1" 200 176 0.000000
+127.0.0.1 - - [06/Apr/2026 16:58:06] "POST /socket.io/?EIO=4&transport=polling&t=yjpkud3k&sid=yawoZZ0o9QsbLbugAABZ HTTP/1.1" 200 214 0.000000
+2026-04-06 16:58:08,018 - __main__ - INFO - Gesture detected: open_palm
+127.0.0.1 - - [06/Apr/2026 16:58:08] "GET /socket.io/?EIO=4&transport=websocket&sid=yawoZZ0o9QsbLbugAABZ HTTP/1.1" 200 0 1.784749
+(16248) accepted ('127.0.0.1', 64574)
+127.0.0.1 - - [06/Apr/2026 16:58:08] "GET /socket.io/?EIO=4&transport=polling&t=yjqydp5n HTTP/1.1" 200 296 0.000000
+(16248) accepted ('127.0.0.1', 54615)
+(16248) accepted ('127.0.0.1', 54616)
+(16248) accepted ('127.0.0.1', 54617)
+127.0.0.1 - - [06/Apr/2026 16:58:08] "POST /socket.io/?EIO=4&transport=polling&t=yjqyj7kx&sid=gcOHyiFzgsy6yDsqAABb HTTP/1.1" 200 214 0.000000
+127.0.0.1 - - [06/Apr/2026 16:58:08] "GET /socket.io/?EIO=4&transport=polling&t=yjqyke0e&sid=gcOHyiFzgsy6yDsqAABb HTTP/1.1" 200 208 0.000000
+(16248) accepted ('127.0.0.1', 50809)
+(16248) accepted ('127.0.0.1', 50810)
+127.0.0.1 - - [06/Apr/2026 16:58:08] "POST /socket.io/?EIO=4&transport=polling&t=yjqytcv8&sid=gcOHyiFzgsy6yDsqAABb HTTP/1.1" 200 214 0.000000
+127.0.0.1 - - [06/Apr/2026 16:58:08] "GET /socket.io/?EIO=4&transport=polling&t=yjqytydz&sid=gcOHyiFzgsy6yDsqAABb HTTP/1.1" 200 176 0.000000
+(16248) accepted ('127.0.0.1', 62545)
+127.0.0.1 - - [06/Apr/2026 16:58:10] "GET /socket.io/?EIO=4&transport=polling&t=yjsic2uu HTTP/1.1" 200 296 0.000000
+127.0.0.1 - - [06/Apr/2026 16:58:10] "GET /socket.io/?EIO=4&transport=websocket&sid=gcOHyiFzgsy6yDsqAABb HTTP/1.1" 200 0 2.758370
+(16248) accepted ('127.0.0.1', 52876)
+127.0.0.1 - - [06/Apr/2026 16:58:10] "POST /socket.io/?EIO=4&transport=polling&t=yjt3iunu&sid=5ac46s_OD8GDo8fzAABd HTTP/1.1" 200 214 0.001044
+(16248) accepted ('127.0.0.1', 52877)
+(16248) accepted ('127.0.0.1', 52878)
+127.0.0.1 - - [06/Apr/2026 16:58:10] "GET /socket.io/?EIO=4&transport=polling&t=yjt3ifdh&sid=5ac46s_OD8GDo8fzAABd HTTP/1.1" 200 208 0.000000
+(16248) accepted ('127.0.0.1', 63289)
+(16248) accepted ('127.0.0.1', 63290)
+127.0.0.1 - - [06/Apr/2026 16:58:10] "GET /socket.io/?EIO=4&transport=polling&t=yjt3p1fq&sid=5ac46s_OD8GDo8fzAABd HTTP/1.1" 200 176 0.000000
+127.0.0.1 - - [06/Apr/2026 16:58:10] "POST /socket.io/?EIO=4&transport=polling&t=yjt3pk8c&sid=5ac46s_OD8GDo8fzAABd HTTP/1.1" 200 214 0.000000
+2026-04-06 16:58:17,178 - __main__ - INFO - Gesture detected: open_palm
+127.0.0.1 - - [06/Apr/2026 16:58:17] "GET /socket.io/?EIO=4&transport=websocket&sid=5ac46s_OD8GDo8fzAABd HTTP/1.1" 200 0 6.548937
+127.0.0.1 - - [06/Apr/2026 16:58:19] "GET /socket.io/?EIO=4&transport=websocket&sid=9ONV8aSWbNyZ0lvCAAAD HTTP/1.1" 200 0 167.974665
+(16248) accepted ('127.0.0.1', 52411)
+127.0.0.1 - - [06/Apr/2026 16:58:19] "GET /socket.io/?EIO=4&transport=polling&t=yjzz29mp HTTP/1.1" 200 296 0.000000
+(16248) accepted ('127.0.0.1', 62920)
+(16248) accepted ('127.0.0.1', 62921)
+127.0.0.1 - - [06/Apr/2026 16:58:19] "POST /socket.io/?EIO=4&transport=polling&t=yjzz87jl&sid=DjNg2o977oZOGr_MAABf HTTP/1.1" 200 214 0.001013
+(16248) accepted ('127.0.0.1', 62922)
+127.0.0.1 - - [06/Apr/2026 16:58:19] "GET /socket.io/?EIO=4&transport=polling&t=yjzz8fcx&sid=DjNg2o977oZOGr_MAABf HTTP/1.1" 200 176 0.000000
+(16248) accepted ('127.0.0.1', 58253)
+127.0.0.1 - - [06/Apr/2026 16:58:19] "GET /socket.io/?EIO=4&transport=polling&t=yjzzjqf8&sid=DjNg2o977oZOGr_MAABf HTTP/1.1" 200 176 0.000000
+(16248) accepted ('127.0.0.1', 49716)
+Traceback (most recent call last):
+  File "D:\HyperKitchen_Prototype\backend\venv\Lib\site-packages\sqlalchemy\engine\base.py", line 1145, in _commit_impl
+    self.engine.dialect.do_commit(self.connection)
+  File "D:\HyperKitchen_Prototype\backend\venv\Lib\site-packages\sqlalchemy\engine\default.py", line 715, in do_commit
+    dbapi_connection.commit()
 sqlite3.OperationalError: disk I/O error
 
 The above exception was the direct cause of the following exception:
 
 Traceback (most recent call last):
-  File "D:\Projects\HyperKitchen\HyperKitchen_Prototype\backend\app.py", line 873, in <module>
-    db.create_all()
-  File "D:\Projects\HyperKitchen\HyperKitchen_Prototype\backend\venv\Lib\site-packages\flask_sqlalchemy\extension.py", line 900, in create_all
-    self._call_for_binds(bind_key, "create_all")
-  File "D:\Projects\HyperKitchen\HyperKitchen_Prototype\backend\venv\Lib\site-packages\flask_sqlalchemy\extension.py", line 881, in _call_for_binds
-    getattr(metadata, op_name)(bind=engine)
-  File "D:\Projects\HyperKitchen\HyperKitchen_Prototype\backend\venv\Lib\site-packages\sqlalchemy\sql\schema.py", line 5928, in create_all
-    bind._run_ddl_visitor(
-  File "D:\Projects\HyperKitchen\HyperKitchen_Prototype\backend\venv\Lib\site-packages\sqlalchemy\engine\base.py", line 3268, in _run_ddl_visitor
-    conn._run_ddl_visitor(visitorcallable, element, **kwargs)
-  File "D:\Projects\HyperKitchen\HyperKitchen_Prototype\backend\venv\Lib\site-packages\sqlalchemy\engine\base.py", line 2467, in _run_ddl_visitor
-    ).traverse_single(element)
-      ^^^^^^^^^^^^^^^^^^^^^^^^
-  File "D:\Projects\HyperKitchen\HyperKitchen_Prototype\backend\venv\Lib\site-packages\sqlalchemy\sql\visitors.py", line 661, in traverse_single
-    return meth(obj, **kw)
-           ^^^^^^^^^^^^^^^
-  File "D:\Projects\HyperKitchen\HyperKitchen_Prototype\backend\venv\Lib\site-packages\sqlalchemy\sql\ddl.py", line 984, in visit_metadata
-    self.traverse_single(
-  File "D:\Projects\HyperKitchen\HyperKitchen_Prototype\backend\venv\Lib\site-packages\sqlalchemy\sql\visitors.py", line 661, in traverse_single
-    return meth(obj, **kw)
-           ^^^^^^^^^^^^^^^
-  File "D:\Projects\HyperKitchen\HyperKitchen_Prototype\backend\venv\Lib\site-packages\sqlalchemy\sql\ddl.py", line 1022, in visit_table
-    )._invoke_with(self.connection)
-      ^^^^^^^^^^^^^^^^^^^^^^^^^^^^^
-  File "D:\Projects\HyperKitchen\HyperKitchen_Prototype\backend\venv\Lib\site-packages\sqlalchemy\sql\ddl.py", line 321, in _invoke_with
-    return bind.execute(self)
-           ^^^^^^^^^^^^^^^^^^
-  File "D:\Projects\HyperKitchen\HyperKitchen_Prototype\backend\venv\Lib\site-packages\sqlalchemy\engine\base.py", line 1419, in execute
-    return meth(
-           ^^^^^
-  File "D:\Projects\HyperKitchen\HyperKitchen_Prototype\backend\venv\Lib\site-packages\sqlalchemy\sql\ddl.py", line 187, in _execute_on_connection
-    return connection._execute_ddl(
-           ^^^^^^^^^^^^^^^^^^^^^^^^
-  File "D:\Projects\HyperKitchen\HyperKitchen_Prototype\backend\venv\Lib\site-packages\sqlalchemy\engine\base.py", line 1530, in _execute_ddl
-    ret = self._execute_context(
-          ^^^^^^^^^^^^^^^^^^^^^^
-  File "D:\Projects\HyperKitchen\HyperKitchen_Prototype\backend\venv\Lib\site-packages\sqlalchemy\engine\base.py", line 1846, in _execute_context
-    return self._exec_single_context(
-           ^^^^^^^^^^^^^^^^^^^^^^^^^^
-  File "D:\Projects\HyperKitchen\HyperKitchen_Prototype\backend\venv\Lib\site-packages\sqlalchemy\engine\base.py", line 1986, in _exec_single_context
-    self._handle_dbapi_exception(
-  File "D:\Projects\HyperKitchen\HyperKitchen_Prototype\backend\venv\Lib\site-packages\sqlalchemy\engine\base.py", line 2363, in _handle_dbapi_exception
+  File "D:\HyperKitchen_Prototype\backend\venv\Lib\site-packages\flask\app.py", line 1458, in wsgi_app
+    response = self.handle_exception(e)
+               ^^^^^^^^^^^^^^^^^^^^^^^^
+  File "D:\HyperKitchen_Prototype\backend\venv\Lib\site-packages\flask_cors\extension.py", line 176, in wrapped_function
+    return cors_after_request(app.make_response(f(*args, **kwargs)))
+                                                ^^^^^^^^^^^^^^^^^^^^
+  File "D:\HyperKitchen_Prototype\backend\venv\Lib\site-packages\flask\app.py", line 1455, in wsgi_app
+    response = self.full_dispatch_request()
+               ^^^^^^^^^^^^^^^^^^^^^^^^^^^^
+  File "D:\HyperKitchen_Prototype\backend\venv\Lib\site-packages\flask\app.py", line 869, in full_dispatch_request
+    rv = self.handle_user_exception(e)
+         ^^^^^^^^^^^^^^^^^^^^^^^^^^^^^
+  File "D:\HyperKitchen_Prototype\backend\venv\Lib\site-packages\flask_cors\extension.py", line 176, in wrapped_function
+    return cors_after_request(app.make_response(f(*args, **kwargs)))
+                                                ^^^^^^^^^^^^^^^^^^^^
+  File "D:\HyperKitchen_Prototype\backend\venv\Lib\site-packages\flask\app.py", line 867, in full_dispatch_request
+    rv = self.dispatch_request()
+         ^^^^^^^^^^^^^^^^^^^^^^^
+  File "D:\HyperKitchen_Prototype\backend\venv\Lib\site-packages\flask\app.py", line 852, in dispatch_request
+    return self.ensure_sync(self.view_functions[rule.endpoint])(**view_args)
+           ^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^
+  File "D:\HyperKitchen_Prototype\backend\venv\Lib\site-packages\flask_jwt_extended\view_decorators.py", line 170, in decorator
+    return current_app.ensure_sync(fn)(*args, **kwargs)
+           ^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^
+  File "D:\HyperKitchen_Prototype\backend\app.py", line 519, in analyze_link
+    db.session.commit()
+  File "D:\HyperKitchen_Prototype\backend\venv\Lib\site-packages\sqlalchemy\orm\scoping.py", line 597, in commit
+    return self._proxied.commit()
+           ^^^^^^^^^^^^^^^^^^^^^^
+  File "D:\HyperKitchen_Prototype\backend\venv\Lib\site-packages\sqlalchemy\orm\session.py", line 2030, in commit
+    trans.commit(_to_root=True)
+  File "<string>", line 2, in commit
+  File "D:\HyperKitchen_Prototype\backend\venv\Lib\site-packages\sqlalchemy\orm\state_changes.py", line 137, in _go
+    ret_value = fn(self, *arg, **kw)
+                ^^^^^^^^^^^^^^^^^^^^
+  File "D:\HyperKitchen_Prototype\backend\venv\Lib\site-packages\sqlalchemy\orm\session.py", line 1318, in commit
+    trans.commit()
+  File "D:\HyperKitchen_Prototype\backend\venv\Lib\site-packages\sqlalchemy\engine\base.py", line 2640, in commit
+    self._do_commit()
+  File "D:\HyperKitchen_Prototype\backend\venv\Lib\site-packages\sqlalchemy\engine\base.py", line 2745, in _do_commit
+    self._connection_commit_impl()
+  File "D:\HyperKitchen_Prototype\backend\venv\Lib\site-packages\sqlalchemy\engine\base.py", line 2716, in _connection_commit_impl
+    self.connection._commit_impl()
+  File "D:\HyperKitchen_Prototype\backend\venv\Lib\site-packages\sqlalchemy\engine\base.py", line 1147, in _commit_impl
+    self._handle_dbapi_exception(e, None, None, None, None)
+  File "D:\HyperKitchen_Prototype\backend\venv\Lib\site-packages\sqlalchemy\engine\base.py", line 2363, in _handle_dbapi_exception
     raise sqlalchemy_exception.with_traceback(exc_info[2]) from e
-  File "D:\Projects\HyperKitchen\HyperKitchen_Prototype\backend\venv\Lib\site-packages\sqlalchemy\engine\base.py", line 1967, in _exec_single_context
-    self.dialect.do_execute(
-  File "D:\Projects\HyperKitchen\HyperKitchen_Prototype\backend\venv\Lib\site-packages\sqlalchemy\engine\default.py", line 952, in do_execute
-    cursor.execute(statement, parameters)
+  File "D:\HyperKitchen_Prototype\backend\venv\Lib\site-packages\sqlalchemy\engine\base.py", line 1145, in _commit_impl
+    self.engine.dialect.do_commit(self.connection)
+  File "D:\HyperKitchen_Prototype\backend\venv\Lib\site-packages\sqlalchemy\engine\default.py", line 715, in do_commit
+    dbapi_connection.commit()
 sqlalchemy.exc.OperationalError: (sqlite3.OperationalError) disk I/O error
-[SQL: 
-CREATE TABLE users (
-	id INTEGER NOT NULL, 
-	username VARCHAR(80) NOT NULL, 
-	password_hash VARCHAR(255) NOT NULL, 
-	created_at DATETIME, 
-	PRIMARY KEY (id), 
-	UNIQUE (username)
-)
-
-]
 (Background on this error at: https://sqlalche.me/e/20/e3q8)
+127.0.0.1 - - [06/Apr/2026 16:59:31] "POST /api/analyze-link HTTP/1.1" 500 42305 1.502746
+127.0.0.1 - - [06/Apr/2026 16:59:38] "GET /socket.io/?EIO=4&transport=websocket&sid=DjNg2o977oZOGr_MAABf HTTP/1.1" 200 0 78.529057
+(16248) accepted ('127.0.0.1', 56549)
+127.0.0.1 - - [06/Apr/2026 16:59:38] "GET /socket.io/?EIO=4&transport=polling&t=ylokq56r HTTP/1.1" 200 296 0.000000
+(16248) accepted ('127.0.0.1', 55883)
+(16248) accepted ('127.0.0.1', 55884)
+(16248) accepted ('127.0.0.1', 55885)
+127.0.0.1 - - [06/Apr/2026 16:59:38] "POST /socket.io/?EIO=4&transport=polling&t=ylol1c7m&sid=4oBUCPzEENmBI8hhAABh HTTP/1.1" 200 214 0.000000
+127.0.0.1 - - [06/Apr/2026 16:59:38] "GET /socket.io/?EIO=4&transport=polling&t=ylol27ez&sid=4oBUCPzEENmBI8hhAABh HTTP/1.1" 200 208 0.000000
+(16248) accepted ('127.0.0.1', 61344)
+127.0.0.1 - - [06/Apr/2026 16:59:38] "GET /socket.io/?EIO=4&transport=polling&t=yloldvx4&sid=4oBUCPzEENmBI8hhAABh HTTP/1.1" 200 176 0.000318

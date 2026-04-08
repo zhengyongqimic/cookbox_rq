@@ -1,0 +1,13 @@
+后端：                                                                                                                                      
+                                                                                                                                                
+  cd D:\HyperKitchen_Prototype\backend                                                                                    
+  .\venv\Scripts\Activate.ps1                                                                                                                   
+  python app.py                                                                                                                                 
+                                                                                                                                                
+  - 前端：                                                                                                                                      
+                                                                                                                                                
+  cd D:\HyperKitchen_Prototype\frontend                                                                                   
+  npm install                                                                                                                                   
+  npm run dev                                                                                                                                   
+                                                                                                                                                
+  - 打开 http://localhost:5173
