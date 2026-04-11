@@ -58,7 +58,7 @@ logger = logging.getLogger(__name__)
 BASE_DIR = os.path.abspath(os.path.dirname(__file__))
 PROJECT_ROOT = os.path.abspath(os.path.join(BASE_DIR, '..'))
 INSTANCE_DIR = os.path.join(BASE_DIR, 'instance')
-DB_PATH = os.path.join(INSTANCE_DIR, 'hyperkitchen.db')
+DB_PATH = os.environ.get('HYPERKITCHEN_DB_PATH') or os.path.join(INSTANCE_DIR, 'hyperkitchen.db')
 
 app = Flask(__name__, instance_path=INSTANCE_DIR)
 app.config['SECRET_KEY'] = 'hyperkitchen-secret-key'
@@ -256,6 +256,8 @@ def observe_gesture(gesture, mode, current_time):
 
 # Video processing status
 processing_status = {}
+ACTIVE_PROCESSING_STATUSES = ['pending', 'analyzing', 'slicing']
+STALE_ACTIVE_TASK_SECONDS = 30 * 60
 
 # In-memory logs buffer
 system_logs = []
@@ -432,12 +434,47 @@ def standardize_video(input_path, output_path):
         logger.error(f"Error standardizing video: {e}")
         return False
 
-def update_db_status(file_id, status):
+def update_db_status(file_id, status, progress=None, message=None, failure_code=None, failure_detail=None):
     with app.app_context():
         video = VideoResource.query.get(file_id)
         if video:
             video.status = status
+            if progress is not None and hasattr(video, 'progress'):
+                video.progress = progress
+            if message is not None and hasattr(video, 'status_message'):
+                video.status_message = message
+            if failure_code is not None and hasattr(video, 'failure_code'):
+                video.failure_code = failure_code
+            if failure_detail is not None and hasattr(video, 'failure_detail'):
+                video.failure_detail = failure_detail
             db.session.commit()
+
+def set_processing_state(file_id, status, progress=None, message=None, emit=True, persist=True, **extra):
+    state = processing_status.get(file_id, {})
+    state.update({
+        "file_id": file_id,
+        "status": status
+    })
+    if progress is not None:
+        state["progress"] = int(progress)
+    if message is not None:
+        state["message"] = message
+    state.update(extra)
+    processing_status[file_id] = state
+
+    if persist:
+        update_db_status(
+            file_id,
+            status,
+            progress=progress,
+            message=message,
+            failure_code=extra.get("failure_code"),
+            failure_detail=extra.get("failure_detail")
+        )
+
+    if emit:
+        socketio.emit('processing_update', state)
+    return state
 
 def update_video_assets(file_id, **kwargs):
     with app.app_context():
@@ -492,12 +529,13 @@ def download_video(url, output_folder, file_id=None):
                     
                     # Send update to frontend
                     if file_id:
-                        socketio.emit('processing_update', {
-                            "file_id": file_id, 
-                            "status": "analyzing", 
-                            "progress": int(overall_progress),
-                            "message": f"Downloading: {percent:.1f}%"
-                        })
+                        set_processing_state(
+                            file_id,
+                            "analyzing",
+                            progress=int(overall_progress),
+                            message=f"Downloading: {percent:.1f}%",
+                            persist=False
+                        )
                         # Yield control to keep connection alive
                         eventlet.sleep(0)
             except Exception:
@@ -594,6 +632,10 @@ def get_status(file_id):
     if video:
         return jsonify({
             "status": video.status,
+            "progress": 100 if video.status == "completed" else 0,
+            "message": None,
+            "failure_code": None,
+            "failure_detail": None,
             "steps": [step.to_dict() for step in video.steps],
             "original_url": video.original_url,
             "file_id": video.id,
@@ -619,9 +661,11 @@ def analyze_link():
     existing_video = VideoResource.query.filter_by(original_url=video_url, status='completed').first()
     if existing_video:
         return jsonify({
-            "message": "Video already processed",
+            "notice": "Video already processed",
             "file_id": existing_video.id,
             "status": existing_video.status,
+            "progress": 100,
+            "message": "Video already processed",
             "steps": [step.to_dict() for step in existing_video.steps],
             "thumbnail_url": existing_video.thumbnail_url,
             "has_audio": existing_video.has_audio,
@@ -629,14 +673,30 @@ def analyze_link():
         })
 
     # Check if currently processing
-    pending_video = VideoResource.query.filter_by(original_url=video_url).filter(VideoResource.status.in_(['pending', 'analyzing', 'slicing'])).first()
+    pending_video = VideoResource.query.filter_by(original_url=video_url).filter(VideoResource.status.in_(ACTIVE_PROCESSING_STATUSES)).first()
     if pending_video:
-         return jsonify({
-            "message": "Video is already being processed",
-            "file_id": pending_video.id,
-            "status": pending_video.status,
-            "thumbnail_url": pending_video.thumbnail_url
-        })
+        age_seconds = None
+        if pending_video.upload_time:
+            age_seconds = (datetime.utcnow() - pending_video.upload_time).total_seconds()
+        is_active_in_memory = pending_video.id in processing_status
+        if is_active_in_memory or age_seconds is None or age_seconds < STALE_ACTIVE_TASK_SECONDS:
+            return jsonify({
+                "notice": "Video is already being processed",
+                "file_id": pending_video.id,
+                "status": pending_video.status,
+                "progress": processing_status.get(pending_video.id, {}).get("progress", 0),
+                "message": processing_status.get(pending_video.id, {}).get("message", "Video is already being processed"),
+                "thumbnail_url": pending_video.thumbnail_url
+            })
+
+        update_db_status(
+            pending_video.id,
+            "error",
+            progress=processing_status.get(pending_video.id, {}).get("progress", 0),
+            message="Previous processing task expired before completion.",
+            failure_code="STALE_PROCESSING_TASK",
+            failure_detail="The server no longer has an active worker for this task."
+        )
 
     file_id = str(uuid.uuid4())
     
@@ -648,23 +708,39 @@ def analyze_link():
         filename=f"{file_id}.mp4", # Placeholder, will update after download
         status='pending'
     )
-    db.session.add(new_video)
-    db.session.commit()
+    try:
+        db.session.add(new_video)
+        db.session.commit()
+    except Exception as e:
+        db.session.rollback()
+        logger.error(f"Failed to create processing task: {e}")
+        return jsonify({"error": f"Failed to create processing task: {e}"}), 500
     
     # Start background processing
-    socketio.start_background_task(process_video_url, video_url, file_id)
+    try:
+        set_processing_state(file_id, "pending", progress=0, message="Queued for processing", emit=False)
+        socketio.start_background_task(process_video_url, video_url, file_id)
+    except Exception as e:
+        set_processing_state(
+            file_id,
+            "error",
+            progress=0,
+            message=f"Failed to start processing task: {e}",
+            failure_code="TASK_START_FAILED",
+            failure_detail=str(e)
+        )
+        return jsonify({"error": "Failed to start processing task", "file_id": file_id}), 500
 
     return jsonify({
         "message": "Video link received, processing started",
-        "file_id": file_id
+        "file_id": file_id,
+        "status": "pending",
+        "progress": 0
     })
 
 def process_video_url(video_url, file_id):
     add_log(f"Starting processing for video URL {file_id}")
-    update_db_status(file_id, "analyzing")
-    
-    processing_status[file_id] = {"status": "analyzing", "progress": 0}
-    socketio.emit('processing_update', {"file_id": file_id, "status": "analyzing", "progress": 5})
+    set_processing_state(file_id, "analyzing", progress=5, message="Starting download...")
     
     try:
         # 1. Download Video
@@ -696,7 +772,7 @@ def process_video_url(video_url, file_id):
                  raise Exception(f"Download failed: {err_msg}")
             
         add_log(f"Video downloaded to {video_path}")
-        socketio.emit('processing_update', {"file_id": file_id, "status": "analyzing", "progress": 30})
+        set_processing_state(file_id, "analyzing", progress=30, message="Download complete. Preparing video...")
         
         # 2. Analyze with AI
         client = get_ark_client()
@@ -711,6 +787,7 @@ def process_video_url(video_url, file_id):
         
         # We need to standardize it anyway for smooth playback
         add_log("Standardizing video for playback...")
+        set_processing_state(file_id, "slicing", progress=32, message="Standardizing video for playback...")
         if standardize_video(video_path, processed_path):
              full_video_url = f"/videos/{processed_filename}"
              media_probe_path = processed_path
@@ -739,7 +816,7 @@ def process_video_url(video_url, file_id):
                 file_size = os.path.getsize(video_path)
                 if file_size > 50 * 1024 * 1024:
                     add_log("Video larger than 50MB, compressing for AI analysis...", "warning")
-                    socketio.emit('processing_update', {"file_id": file_id, "status": "analyzing", "progress": 35, "message": "Compressing video for AI..."})
+                    set_processing_state(file_id, "analyzing", progress=35, message="Compressing video for AI...")
                     
                     # Compress video to lower resolution/bitrate for AI analysis
                     compressed_path = os.path.join(app.config['UPLOAD_FOLDER'], f"compressed_{os.path.basename(video_path)}")
@@ -765,7 +842,7 @@ def process_video_url(video_url, file_id):
                         analysis_video_path = video_path
                 else:
                     analysis_video_path = video_path
-                    socketio.emit('processing_update', {"file_id": file_id, "status": "analyzing", "progress": 35, "message": "Uploading to AI..."})
+                    set_processing_state(file_id, "analyzing", progress=35, message="Uploading to AI...")
                     
                 with open(analysis_video_path, 'rb') as f:
                     video_bytes = f.read()
@@ -790,7 +867,7 @@ def process_video_url(video_url, file_id):
 """
                 
                 add_log("Calling AI with video content...")
-                socketio.emit('processing_update', {"file_id": file_id, "status": "analyzing", "progress": 40, "message": "AI Analyzing..."})
+                set_processing_state(file_id, "analyzing", progress=40, message="AI Analyzing...")
                 
                 # Use tpool to run the blocking AI call in a separate thread
                 completion = eventlet.tpool.execute(
@@ -847,7 +924,7 @@ def process_video_url(video_url, file_id):
                     
             except Exception as ai_error:
                 add_log(f"AI Analysis failed: {ai_error}", "error")
-                socketio.emit('processing_update', {"file_id": file_id, "status": "analyzing", "progress": 45, "message": f"AI Error: {str(ai_error)}. Using fallback."})
+                set_processing_state(file_id, "analyzing", progress=45, message=f"AI Error: {str(ai_error)}. Using fallback.")
                 steps = [] # Clear to trigger fallback
         
         # Fallback if AI fails or returns empty
@@ -859,8 +936,7 @@ def process_video_url(video_url, file_id):
                 {"id": 3, "start": 30, "end": 45, "title": "Finishing Touches", "description": "Seasoning and plating.", "highlight": "Serve"}
             ]
             
-        processing_status[file_id]["progress"] = 90
-        socketio.emit('processing_update', {"file_id": file_id, "status": "slicing", "progress": 90, "message": "Finalizing..."})
+        set_processing_state(file_id, "slicing", progress=90, message="Finalizing...")
         
         # Update steps with Full Video URL
         add_log(f"Processing completed. Using video URL: {full_video_url}")
@@ -872,34 +948,29 @@ def process_video_url(video_url, file_id):
 
         # Save steps to DB
         save_steps_to_db(file_id, steps)
-        update_db_status(file_id, "completed")
-
-        processing_status[file_id] = {
-            "status": "completed",
-            "steps": steps,
-            "original_url": video_url,
-            "file_id": file_id,
-            "video_url": full_video_url,
-            "thumbnail_url": thumbnail_url,
-            "duration_seconds": metadata['duration_seconds'],
-            "has_audio": metadata['has_audio']
-        }
-        socketio.emit('processing_update', {
-            "file_id": file_id,
-            "status": "completed",
-            "steps": steps,
-            "progress": 100,
-            "original_url": video_url,
-            "video_url": full_video_url,
-            "thumbnail_url": thumbnail_url,
-            "duration_seconds": metadata['duration_seconds'],
-            "has_audio": metadata['has_audio']
-        })
+        set_processing_state(
+            file_id,
+            "completed",
+            progress=100,
+            message="Processing complete.",
+            steps=steps,
+            original_url=video_url,
+            video_url=full_video_url,
+            thumbnail_url=thumbnail_url,
+            duration_seconds=metadata['duration_seconds'],
+            has_audio=metadata['has_audio']
+        )
         
     except Exception as e:
         add_log(f"Error processing video URL: {e}", "error")
-        update_db_status(file_id, "error")
-        socketio.emit('processing_update', {"file_id": file_id, "status": "error", "message": str(e)})
+        set_processing_state(
+            file_id,
+            "error",
+            progress=processing_status.get(file_id, {}).get("progress", 0),
+            message=str(e),
+            failure_code="PROCESSING_FAILED",
+            failure_detail=str(e)
+        )
 
 @app.route('/api/upload', methods=['POST'])
 @jwt_required(optional=True)

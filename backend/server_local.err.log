@@ -1,0 +1,10 @@
+2026-04-08 22:36:05,969 - app - INFO - MediaPipe Hands initialized successfully
+INFO: Created TensorFlow Lite XNNPACK delegate for CPU.
+2026-04-08 22:37:36,888 - app - INFO - Starting processing for xiaohongshu video URL 9ad37e2d-30dd-4eee-b3f5-b5c5b749305a
+2026-04-08 22:37:36,898 - app - INFO - Downloading video from http://xhslink.com/o/A89wBXex9Gv
+ERROR: Failed to decrypt with DPAPI. See  https://github.com/yt-dlp/yt-dlp/issues/10927  for more info
+ERROR: ERROR: Failed to decrypt with DPAPI. See  https://github.com/yt-dlp/yt-dlp/issues/10927  for more info
+2026-04-08 22:37:37,842 - app - ERROR - Download provider browser_session_provider failed: ERROR: ERROR: Failed to decrypt with DPAPI. See  https://github.com/yt-dlp/yt-dlp/issues/10927  for more info
+2026-04-08 22:37:37,842 - app - WARNING - Provider browser_session_provider failed for xiaohongshu: Download failed: ERROR: ERROR: Failed to decrypt with DPAPI. See  https://github.com/yt-dlp/yt-dlp/issues/10927  for more info
+2026-04-08 22:37:37,842 - app - WARNING - Provider managed_api_provider failed for xiaohongshu: Managed provider is not configured on this server.
+2026-04-08 22:37:37,851 - app - ERROR - Error processing video URL: Managed provider is not configured on this server.

@@ -1,0 +1,9 @@
+2026-04-09 22:56:00,226 - app - INFO - MediaPipe Hands initialized successfully
+INFO: Created TensorFlow Lite XNNPACK delegate for CPU.
+2026-04-09 22:56:41,850 - app - INFO - Starting processing for xiaohongshu video URL 4fc5afe0-6b15-4ba9-b449-f38df4d2451b
+2026-04-09 22:56:41,859 - app - INFO - Downloading video from http://xhslink.com/o/A89wBXex9Gv
+ERROR: [download] Got error: timed out
+2026-04-09 22:57:38,663 - app - ERROR - Download provider browser_session_provider failed: ERROR: [download] Got error: timed out
+2026-04-09 22:57:38,664 - app - WARNING - Provider browser_session_provider failed for xiaohongshu: Download failed: ERROR: [download] Got error: timed out
+2026-04-09 22:57:38,664 - app - WARNING - Provider managed_api_provider failed for xiaohongshu: Managed provider is not configured on this server.
+2026-04-09 22:57:38,674 - app - ERROR - Error processing video URL: Managed provider is not configured on this server.

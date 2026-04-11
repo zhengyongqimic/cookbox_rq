@@ -42,10 +42,12 @@ export type GestureType = 'next' | 'prev' | 'toggle_pause' | 'overview' | 'resum
 
 export interface ProcessingStatus {
   file_id: string;
-  status: 'analyzing' | 'slicing' | 'completed' | 'error';
+  status: 'pending' | 'analyzing' | 'slicing' | 'completed' | 'error';
   progress?: number;
   steps?: Step[];
   message?: string;
+  failure_code?: string | null;
+  failure_detail?: string | null;
   video_url?: string | null;
   thumbnail_url?: string | null;
   duration_seconds?: number | null;
@@ -55,7 +57,11 @@ export interface ProcessingStatus {
 
 export interface RecipeDetailPayload {
   file_id: string;
-  status: string;
+  status: ProcessingStatus['status'];
+  progress?: number;
+  message?: string | null;
+  failure_code?: string | null;
+  failure_detail?: string | null;
   steps: Step[];
   original_url?: string | null;
   video_url?: string | null;

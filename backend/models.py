@@ -35,7 +35,7 @@ class VideoResource(db.Model):
     original_url = db.Column(db.String(512), index=True) # For deduplication by URL
     file_hash = db.Column(db.String(64), index=True)     # For deduplication by content
     upload_time = db.Column(db.DateTime, default=datetime.utcnow)
-    status = db.Column(db.String(50), default='pending') # pending, analyzing, completed, error
+    status = db.Column(db.String(50), default='pending') # pending, analyzing, slicing, completed, error
     duration_seconds = db.Column(db.Float)
     has_audio = db.Column(db.Boolean, default=False)
     processing_version = db.Column(db.Integer, default=1)

@@ -49,7 +49,12 @@ const Dashboard = () => {
   const [processingStatus, setProcessingStatus] = useState<ProcessingStatus | null>(null);
   const [newRecipeData, setNewRecipeData] = useState({ title: '', description: '', video_id: '' });
   const [isSaving, setIsSaving] = useState(false);
+  const processingFileIdRef = useRef<string | null>(null);
   const processingThumbnailUrl = resolveMediaUrl(processingStatus?.thumbnail_url);
+  const isProcessing =
+    processingStatus?.status === 'pending' ||
+    processingStatus?.status === 'analyzing' ||
+    processingStatus?.status === 'slicing';
 
   useEffect(() => {
     fetchRecipes();
@@ -90,6 +95,12 @@ const Dashboard = () => {
 
     socket.on('processing_update', (status: ProcessingStatus) => {
       if (isModalOpen) {
+        if (processingFileIdRef.current && status.file_id !== processingFileIdRef.current) {
+          return;
+        }
+        if (status.file_id) {
+          processingFileIdRef.current = status.file_id;
+        }
         setProcessingStatus(status);
         if (status.status === 'completed' && status.steps) {
           setNewRecipeData((prev) => ({ ...prev, video_id: status.file_id }));
@@ -110,6 +121,46 @@ const Dashboard = () => {
     };
   }, [isModalOpen]);
 
+  useEffect(() => {
+    const fileId = processingStatus?.file_id;
+    const isActive =
+      isModalOpen &&
+      fileId &&
+      processingStatus.status !== 'completed' &&
+      processingStatus.status !== 'error';
+
+    if (!isActive) {
+      return;
+    }
+
+    let cancelled = false;
+    const pollStatus = async () => {
+      try {
+        const latest = await getVideoStatus(fileId);
+        if (cancelled || processingFileIdRef.current !== fileId) {
+          return;
+        }
+        const nextStatus: ProcessingStatus = {
+          ...latest,
+          message: latest.message ?? undefined,
+        };
+        setProcessingStatus(nextStatus);
+        if (nextStatus.status === 'completed' && nextStatus.steps) {
+          setNewRecipeData((prev) => ({ ...prev, video_id: nextStatus.file_id }));
+        }
+      } catch (error) {
+        console.error('Failed to poll processing status', error);
+      }
+    };
+
+    pollStatus();
+    const intervalId = window.setInterval(pollStatus, 1500);
+    return () => {
+      cancelled = true;
+      window.clearInterval(intervalId);
+    };
+  }, [isModalOpen, processingStatus?.file_id, processingStatus?.status]);
+
   const handleFileChange = (e: React.ChangeEvent<HTMLInputElement>) => {
     if (e.target.files && e.target.files[0]) {
       setFile(e.target.files[0]);
@@ -120,10 +171,19 @@ const Dashboard = () => {
     if (!file) return;
     try {
       setProcessingStatus({ file_id: '', status: 'analyzing', progress: 0 });
-      await uploadVideo(file);
+      const response = await uploadVideo(file);
+      if (response.file_id) {
+        processingFileIdRef.current = response.file_id;
+        setProcessingStatus({
+          file_id: response.file_id,
+          status: response.status ?? 'analyzing',
+          progress: response.progress ?? 0,
+          message: response.message,
+        });
+      }
     } catch (error: any) {
       console.error('Upload failed', error);
-      setProcessingStatus({ file_id: '', status: 'error', message: error.response?.data?.error || 'Upload failed' });
+      setProcessingStatus({ file_id: '', status: 'error', message: error.response?.data?.error || error.message || 'Upload failed' });
     }
   };
 
@@ -131,10 +191,27 @@ const Dashboard = () => {
     if (!videoLink) return;
     try {
       setProcessingStatus({ file_id: '', status: 'analyzing', progress: 0 });
-      await analyzeVideoLink(videoLink);
+      const response = await analyzeVideoLink(videoLink);
+      if (!response.file_id) {
+        throw new Error('Analysis request did not return a file_id');
+      }
+      processingFileIdRef.current = response.file_id;
+      setProcessingStatus({
+        file_id: response.file_id,
+        status: response.status ?? 'pending',
+        progress: response.progress ?? 0,
+        message: response.message,
+        thumbnail_url: response.thumbnail_url,
+        steps: response.steps,
+        duration_seconds: response.duration_seconds,
+        has_audio: response.has_audio,
+      });
+      if (response.status === 'completed' && response.steps) {
+        setNewRecipeData((prev) => ({ ...prev, video_id: response.file_id }));
+      }
     } catch (error: any) {
       console.error('Link analysis failed', error);
-      setProcessingStatus({ file_id: '', status: 'error', message: error.response?.data?.error || 'Analysis failed' });
+      setProcessingStatus({ file_id: '', status: 'error', message: error.response?.data?.error || error.message || 'Analysis failed' });
     }
   };
 
@@ -157,6 +234,7 @@ const Dashboard = () => {
     setFile(null);
     setVideoLink('');
     setProcessingStatus(null);
+    processingFileIdRef.current = null;
     setNewRecipeData({ title: '', description: '', video_id: '' });
   };
 
@@ -520,26 +598,26 @@ const Dashboard = () => {
                     {videoLink ? (
                       <button
                         onClick={handleLinkAnalyze}
-                        disabled={!videoLink || processingStatus?.status === 'analyzing' || processingStatus?.status === 'slicing'}
+                        disabled={!videoLink || isProcessing}
                         className="w-full bg-orange-500 hover:bg-orange-600 text-white font-bold py-3 rounded-lg transition-colors flex items-center justify-center disabled:opacity-50"
                       >
-                        {processingStatus?.status === 'analyzing' || processingStatus?.status === 'slicing' ? (
+                        {isProcessing ? (
                           <div className="flex items-center gap-2">
                             <Loader2 className="animate-spin" size={20} />
-                            <span>Processing... {processingStatus.progress}%</span>
+                            <span>Processing... {processingStatus?.progress ?? 0}%</span>
                           </div>
                         ) : 'Analyze Link'}
                       </button>
                     ) : (
                       <button
                         onClick={handleUpload}
-                        disabled={!file || processingStatus?.status === 'analyzing' || processingStatus?.status === 'slicing'}
+                        disabled={!file || isProcessing}
                         className="w-full bg-orange-500 hover:bg-orange-600 text-white font-bold py-3 rounded-lg transition-colors flex items-center justify-center disabled:opacity-50 disabled:cursor-not-allowed"
                       >
-                        {processingStatus?.status === 'analyzing' || processingStatus?.status === 'slicing' ? (
+                        {isProcessing ? (
                           <div className="flex items-center gap-2">
                             <Loader2 className="animate-spin" size={20} />
-                            <span>Processing... {processingStatus.progress}%</span>
+                            <span>Processing... {processingStatus?.progress ?? 0}%</span>
                           </div>
                         ) : (
                           <div className="flex items-center gap-2">
