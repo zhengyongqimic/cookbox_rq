@@ -9,10 +9,10 @@ except TypeError:
 
 import os
 import sys
-TRAe_MEDIAPIPE_PATH = r'C:\Trae_Temp'
-if os.path.isdir(TRAe_MEDIAPIPE_PATH) and TRAe_MEDIAPIPE_PATH not in sys.path:
+TRAE_MEDIAPIPE_PATH = os.environ.get('TRAE_MEDIAPIPE_PATH', r'C:\Trae_Temp')
+if os.path.isdir(TRAE_MEDIAPIPE_PATH) and TRAE_MEDIAPIPE_PATH not in sys.path:
     # Prefer the temp path when it is complete, but fall back if import fails.
-    sys.path.insert(0, TRAe_MEDIAPIPE_PATH)
+    sys.path.insert(0, TRAE_MEDIAPIPE_PATH)
 
 import time
 import logging
@@ -25,8 +25,8 @@ import cv2
 try:
     import mediapipe as mp
 except ModuleNotFoundError:
-    if TRAe_MEDIAPIPE_PATH in sys.path:
-        sys.path.remove(TRAe_MEDIAPIPE_PATH)
+    if TRAE_MEDIAPIPE_PATH in sys.path:
+        sys.path.remove(TRAE_MEDIAPIPE_PATH)
     try:
         import mediapipe as mp
     except ModuleNotFoundError:
@@ -57,19 +57,30 @@ logger = logging.getLogger(__name__)
 # Initialize Flask app
 BASE_DIR = os.path.abspath(os.path.dirname(__file__))
 PROJECT_ROOT = os.path.abspath(os.path.join(BASE_DIR, '..'))
-INSTANCE_DIR = os.path.join(BASE_DIR, 'instance')
+INSTANCE_DIR = os.environ.get('HYPERKITCHEN_INSTANCE_DIR') or os.path.join(BASE_DIR, 'instance')
+UPLOAD_FOLDER = os.environ.get('HYPERKITCHEN_UPLOAD_DIR') or os.path.join(BASE_DIR, 'uploads')
+THUMBNAIL_FOLDER = os.environ.get('HYPERKITCHEN_THUMBNAIL_DIR') or os.path.join(BASE_DIR, 'thumbnails')
+SLICES_FOLDER = os.environ.get('HYPERKITCHEN_SLICES_DIR') or os.path.join(BASE_DIR, 'slices')
+FRONTEND_DIST_FOLDER = os.environ.get('HYPERKITCHEN_FRONTEND_DIST') or os.path.join(PROJECT_ROOT, 'frontend', 'dist')
 DB_PATH = os.environ.get('HYPERKITCHEN_DB_PATH') or os.path.join(INSTANCE_DIR, 'hyperkitchen.db')
+MAX_CONTENT_LENGTH_MB = int(os.environ.get('HYPERKITCHEN_MAX_UPLOAD_MB', '500'))
+SECRET_KEY = os.environ.get('HYPERKITCHEN_SECRET_KEY', 'change-me-in-production')
+JWT_SECRET_KEY = os.environ.get('HYPERKITCHEN_JWT_SECRET_KEY', SECRET_KEY)
+allowed_origins_env = os.environ.get('HYPERKITCHEN_ALLOWED_ORIGINS', '*')
+ALLOWED_ORIGINS = '*' if allowed_origins_env.strip() == '*' else [origin.strip() for origin in allowed_origins_env.split(',') if origin.strip()]
+APP_PORT = int(os.environ.get('PORT', os.environ.get('HYPERKITCHEN_PORT', '5000')))
+APP_DEBUG = os.environ.get('HYPERKITCHEN_DEBUG', '').lower() in {'1', 'true', 'yes'}
 
 app = Flask(__name__, instance_path=INSTANCE_DIR)
-app.config['SECRET_KEY'] = 'hyperkitchen-secret-key'
-app.config['JWT_SECRET_KEY'] = 'hyperkitchen-jwt-secret-key'
+app.config['SECRET_KEY'] = SECRET_KEY
+app.config['JWT_SECRET_KEY'] = JWT_SECRET_KEY
 app.config['SQLALCHEMY_DATABASE_URI'] = f"sqlite:///{DB_PATH.replace(os.sep, '/')}"
 app.config['SQLALCHEMY_TRACK_MODIFICATIONS'] = False
-app.config['UPLOAD_FOLDER'] = os.path.join(BASE_DIR, 'uploads')
-app.config['THUMBNAIL_FOLDER'] = os.path.join(BASE_DIR, 'thumbnails')
-app.config['SLICES_FOLDER'] = os.path.join(BASE_DIR, 'slices')
-app.config['MAX_CONTENT_LENGTH'] = 500 * 1024 * 1024  # 500MB max upload
-app.config['FRONTEND_DIST_FOLDER'] = os.path.join(PROJECT_ROOT, 'frontend', 'dist')
+app.config['UPLOAD_FOLDER'] = UPLOAD_FOLDER
+app.config['THUMBNAIL_FOLDER'] = THUMBNAIL_FOLDER
+app.config['SLICES_FOLDER'] = SLICES_FOLDER
+app.config['MAX_CONTENT_LENGTH'] = MAX_CONTENT_LENGTH_MB * 1024 * 1024
+app.config['FRONTEND_DIST_FOLDER'] = FRONTEND_DIST_FOLDER
 
 # Ensure directories exist
 os.makedirs(INSTANCE_DIR, exist_ok=True)
@@ -78,7 +89,7 @@ os.makedirs(app.config['THUMBNAIL_FOLDER'], exist_ok=True)
 os.makedirs(app.config['SLICES_FOLDER'], exist_ok=True)
 
 # Enable CORS
-CORS(app)
+CORS(app, resources={r"/api/*": {"origins": ALLOWED_ORIGINS}})
 
 # Initialize Extensions
 db.init_app(app)
@@ -89,7 +100,7 @@ jwt = JWTManager(app)
 # Increase ping_timeout and ping_interval to prevent disconnection during long processing
 socketio = SocketIO(
     app, 
-    cors_allowed_origins="*", 
+    cors_allowed_origins=ALLOWED_ORIGINS, 
     async_mode='eventlet',
     ping_timeout=120, # Wait 120s for ping response (default 5)
     ping_interval=25  # Send ping every 25s (default 25)
@@ -505,8 +516,7 @@ def save_steps_to_db(file_id, steps):
         db.session.commit()
 
 def get_ark_client():
-    # Set API Key directly for prototype convenience as requested
-    api_key = "74f103d8-7502-4dc6-9976-6587f382e19f" 
+    api_key = os.environ.get('ARK_API_KEY')
     if not api_key:
         logger.warning("ARK_API_KEY not found")
         return None
@@ -1341,4 +1351,4 @@ with app.app_context():
     backfill_existing_video_assets()
 
 if __name__ == '__main__':
-    socketio.run(app, host='0.0.0.0', port=5000, debug=True, allow_unsafe_werkzeug=True)
+    socketio.run(app, host='0.0.0.0', port=APP_PORT, debug=APP_DEBUG, allow_unsafe_werkzeug=True)

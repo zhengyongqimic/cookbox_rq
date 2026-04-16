@@ -1,0 +1,15 @@
+[Unit]
+Description=HyperKitchen Flask service
+After=network.target
+
+[Service]
+Type=simple
+User=root
+WorkingDirectory=/srv/hyperkitchen/current/backend
+EnvironmentFile=/etc/hyperkitchen.env
+ExecStart=/srv/hyperkitchen/venv/bin/gunicorn --worker-class eventlet -w 1 --bind 127.0.0.1:5000 wsgi:app
+Restart=always
+RestartSec=5
+
+[Install]
+WantedBy=multi-user.target

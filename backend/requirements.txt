@@ -12,3 +12,4 @@ Flask-SQLAlchemy
 Flask-Migrate
 Flask-JWT-Extended
 yt-dlp
+gunicorn
