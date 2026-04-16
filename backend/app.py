@@ -37,7 +37,10 @@ from flask_socketio import SocketIO, emit
 from flask_cors import CORS
 from werkzeug.utils import secure_filename
 from werkzeug.security import generate_password_hash, check_password_hash
-from volcenginesdkarkruntime import Ark
+try:
+    from volcenginesdkarkruntime import Ark
+except ModuleNotFoundError:
+    Ark = None
 import subprocess
 import yt_dlp
 import ffmpeg
@@ -516,6 +519,9 @@ def save_steps_to_db(file_id, steps):
         db.session.commit()
 
 def get_ark_client():
+    if Ark is None:
+        logger.warning("volcenginesdkarkruntime is not installed; AI analysis is disabled")
+        return None
     api_key = os.environ.get('ARK_API_KEY')
     if not api_key:
         logger.warning("ARK_API_KEY not found")
